@@ -78,6 +78,7 @@ That makes the model care about whether there may be enough move to pay spread a
 .venv/bin/python scripts/walk_forward_report.py --config config/report_hourly_barrier.yaml --output reports/xauusd_hourly_regime_walk_forward.html
 .venv/bin/python scripts/train_rl_policy.py --config config/report_hourly_barrier.yaml --output reports/xauusd_rl_policy_penalized.html
 .venv/bin/python scripts/walk_forward_rl.py --config config/report_hourly_barrier.yaml --output reports/xauusd_rl_walk_forward.html
+.venv/bin/python scripts/meta_label_report.py --config config/report_hourly_barrier.yaml --output reports/xauusd_meta_label_walk_forward.html
 ```
 
 ## References

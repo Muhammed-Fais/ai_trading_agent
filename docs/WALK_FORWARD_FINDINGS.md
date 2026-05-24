@@ -113,6 +113,31 @@ Transparent non-ML baselines also failed after costs:
 
 This suggests the current hourly edge is not strong enough as a standalone system under the current spread/slippage and ATR-exit assumptions.
 
+## Meta-Label Experiment
+
+I implemented the López de Prado-style idea of separating trade generation from trade filtering:
+
+- Primary model: transparent candidate setups
+  - trend pullback
+  - trend follow
+  - Donchian breakout
+  - Donchian reversal
+  - session momentum
+  - volatility expansion
+- Secondary model: ML accept/reject classifier
+- Label: ATR target hit before ATR stop
+- Threshold selected on validation window only
+
+Walk-forward result:
+
+- Total return: `-5.09%`
+- Max drawdown: `-10.44%`
+- Trades: `600`
+- Win rate: `45.00%`
+- Profit factor: `0.95`
+
+This is better structured than raw prediction, but still not tradable. The `trend_follow` setup dominates the trade count, and the `2018-2020` fold remains the main failure period. The next useful improvement is per-setup model/threshold selection instead of one global meta-label threshold.
+
 Next research should focus on:
 
 - Regime filters to avoid weak periods
