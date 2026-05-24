@@ -220,6 +220,7 @@ def run_walk_forward(
     validation_years: int,
     test_years: int,
     exclude_setups: set[str],
+    use_regime_gate: bool,
 ) -> None:
     cfg = load_config(config_path)
     df = load_ohlcv_csv(cfg.data.train_csv, cfg.data.timestamp_column)
@@ -238,9 +239,9 @@ def run_walk_forward(
         validation_df = df[(df.index >= validation_start) & (df.index < test_start)]
         test_df = df[(df.index >= test_start) & (df.index < test_end)]
 
-        train_candidates = generate_candidate_trades(train_df)
-        validation_candidates = generate_candidate_trades(validation_df)
-        test_candidates = generate_candidate_trades(test_df)
+        train_candidates = generate_candidate_trades(train_df, use_regime_gate=use_regime_gate)
+        validation_candidates = generate_candidate_trades(validation_df, use_regime_gate=use_regime_gate)
+        test_candidates = generate_candidate_trades(test_df, use_regime_gate=use_regime_gate)
         if exclude_setups:
             train_candidates = train_candidates[~train_candidates["setup"].isin(exclude_setups)]
             validation_candidates = validation_candidates[~validation_candidates["setup"].isin(exclude_setups)]
@@ -479,7 +480,7 @@ def run_walk_forward(
 <body>
 <main>
   <h1>XAUUSD Meta-Label Walk-Forward</h1>
-  <p>Rule-generated candidate trades filtered by an ML accept/reject model.</p>
+  <p>Rule-generated candidate trades filtered by an ML accept/reject model. Regime gate: {html.escape(str(use_regime_gate))}.</p>
   <div class="metrics">{cards}</div>
   <section><h2>Combined Equity</h2>{_line_svg(combined["equity"])}</section>
   <section>
@@ -508,6 +509,7 @@ def main() -> None:
     parser.add_argument("--validation-years", type=int, default=1)
     parser.add_argument("--test-years", type=int, default=2)
     parser.add_argument("--exclude-setup", action="append", default=[])
+    parser.add_argument("--use-regime-gate", action="store_true")
     args = parser.parse_args()
     run_walk_forward(
         args.config,
@@ -518,6 +520,7 @@ def main() -> None:
         args.validation_years,
         args.test_years,
         set(args.exclude_setup),
+        args.use_regime_gate,
     )
 
 

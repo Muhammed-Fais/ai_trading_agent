@@ -27,7 +27,33 @@ def _signal_side(long_mask: pd.Series, short_mask: pd.Series) -> pd.Series:
     return side
 
 
-def generate_candidate_trades(df: pd.DataFrame) -> pd.DataFrame:
+def _regime_masks(df: pd.DataFrame, features: pd.DataFrame) -> dict[str, pd.Series]:
+    close = df["close"]
+    ema_55 = close.ewm(span=55, adjust=False).mean()
+    ema_288 = close.ewm(span=288, adjust=False).mean()
+    trend_strength = (ema_55 / ema_288 - 1).abs()
+    trend_ok = trend_strength > trend_strength.rolling(500).median()
+    atr = features["atr_pct_14"]
+    atr_median = atr.rolling(500).median()
+    atr_q75 = atr.rolling(500).quantile(0.75)
+    atr_q90 = atr.rolling(500).quantile(0.90)
+    normal_vol = (atr > atr_median) & (atr < atr_q90)
+    expansion_vol = (atr > atr_q75) & (atr < atr_q90)
+    calm_vol = atr < atr_q75
+    not_asia = ~features["is_asia_session"].astype(bool)
+    london_ny = features["is_london_ny_overlap"].astype(bool)
+
+    return {
+        "trend": trend_ok & normal_vol & not_asia,
+        "breakout": expansion_vol & not_asia,
+        "reversal": calm_vol & not_asia,
+        "session": london_ny & normal_vol,
+        "volatility": expansion_vol & not_asia,
+        "any": pd.Series(True, index=df.index),
+    }
+
+
+def generate_candidate_trades(df: pd.DataFrame, use_regime_gate: bool = False) -> pd.DataFrame:
     close = df["close"]
     ema_21 = close.ewm(span=21, adjust=False).mean()
     ema_55 = close.ewm(span=55, adjust=False).mean()
@@ -35,6 +61,7 @@ def generate_candidate_trades(df: pd.DataFrame) -> pd.DataFrame:
     donchian_high = df["high"].rolling(96).max().shift(1)
     donchian_low = df["low"].rolling(96).min().shift(1)
     features = build_features(df)
+    regimes = _regime_masks(df, features)
     atr = features["atr_pct_14"]
     atr_ok = atr > atr.rolling(500).median()
     london_ny = features["is_london_ny_overlap"].astype(bool)
@@ -62,9 +89,19 @@ def generate_candidate_trades(df: pd.DataFrame) -> pd.DataFrame:
             atr_ok & (features["ret_8"] < -features["realized_vol_96"] * 1.2),
         ),
     }
+    setup_regime = {
+        "trend_pullback": "trend",
+        "trend_follow": "trend",
+        "donchian_breakout": "breakout",
+        "donchian_reversal": "reversal",
+        "session_momentum": "session",
+        "volatility_expansion": "volatility",
+    }
 
     rows = []
     for setup, sides in setups.items():
+        if use_regime_gate:
+            sides = sides.mask(~regimes[setup_regime[setup]], "flat")
         active = sides[sides != "flat"]
         for timestamp, side in active.items():
             rows.append({"timestamp": timestamp, "side": side, "setup": setup})

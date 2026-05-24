@@ -152,6 +152,18 @@ I added an exclusion experiment for `trend_follow`:
 
 This is the closest to breakeven so far and removes the catastrophic trend-follow failure, but it is still not strong enough for live trading. The second half of the test is healthier than the first half, suggesting the remaining setups may need a market-era/regime gate.
 
+### Setup Regime Gate
+
+I tested setup-specific regime gates on the no-`trend_follow` meta-label system.
+
+- Total return: `-5.49%`
+- Max drawdown: `-10.85%`
+- Trades: `397`
+- Win rate: `43.83%`
+- Profit factor: `0.92`
+
+This made the result worse than the ungated no-`trend_follow` version. The gate helped some later folds but damaged earlier folds too much. Current best research baseline remains the ungated no-`trend_follow` meta-label variant.
+
 Next research should focus on:
 
 - Regime filters to avoid weak periods
