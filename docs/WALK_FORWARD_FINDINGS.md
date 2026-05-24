@@ -138,6 +138,20 @@ Walk-forward result:
 
 This is better structured than raw prediction, but still not tradable. The `trend_follow` setup dominates the trade count, and the `2018-2020` fold remains the main failure period. The next useful improvement is per-setup model/threshold selection instead of one global meta-label threshold.
 
+### Per-Setup Selection
+
+I then moved from one global threshold to per-setup validation thresholds. This improved most individual folds, but the `trend_follow` setup still caused a severe `2018-2020` loss.
+
+I added an exclusion experiment for `trend_follow`:
+
+- Total return: `0.79%`
+- Max drawdown: `-11.92%`
+- Trades: `610`
+- Win rate: `46.39%`
+- Profit factor: `1.01`
+
+This is the closest to breakeven so far and removes the catastrophic trend-follow failure, but it is still not strong enough for live trading. The second half of the test is healthier than the first half, suggesting the remaining setups may need a market-era/regime gate.
+
 Next research should focus on:
 
 - Regime filters to avoid weak periods

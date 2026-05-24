@@ -1,11 +1,11 @@
 {
-  "ending_equity": 9490.845071880385,
-  "total_return": -0.050915492811961505,
-  "max_drawdown": -0.10441863469709012,
-  "trades": 600.0,
-  "win_rate": 0.45,
-  "avg_trade_pnl": -0.8485915468660249,
-  "profit_factor": 0.9500658903084624,
-  "gross_profit": 9687.380691817634,
-  "gross_loss": -10196.53561993725
+  "ending_equity": 8610.090372659597,
+  "total_return": -0.13899096273404032,
+  "max_drawdown": -0.2269014562370948,
+  "trades": 830.0,
+  "win_rate": 0.43493975903614457,
+  "avg_trade_pnl": -1.6745899124583234,
+  "profit_factor": 0.8947879967793403,
+  "gross_profit": 11820.651761034336,
+  "gross_loss": -13210.561388374743
 }

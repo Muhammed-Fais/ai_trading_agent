@@ -146,6 +146,57 @@ def _simulate_candidates(
     return result
 
 
+def _simulate_with_setup_thresholds(
+    df: pd.DataFrame,
+    candidates: pd.DataFrame,
+    probabilities: np.ndarray,
+    thresholds: dict[str, float],
+    initial_equity: float,
+    risk_per_trade: float,
+    spread_bps: float,
+    slippage_bps: float,
+    max_position_notional: float,
+    max_hold_bars: int,
+    stop_atr_multiple: float,
+    take_profit_atr_multiple: float,
+) -> pd.DataFrame:
+    keep = np.array(
+        [
+            probability >= thresholds.get(setup, 1.01)
+            for setup, probability in zip(candidates["setup"], probabilities, strict=True)
+        ]
+    )
+    if not keep.any():
+        return _simulate_candidates(
+            df,
+            candidates.iloc[0:0],
+            np.array([]),
+            0.0,
+            initial_equity,
+            risk_per_trade,
+            spread_bps,
+            slippage_bps,
+            max_position_notional,
+            max_hold_bars,
+            stop_atr_multiple,
+            take_profit_atr_multiple,
+        )
+    return _simulate_candidates(
+        df,
+        candidates[keep].reset_index(drop=True),
+        probabilities[keep],
+        0.0,
+        initial_equity,
+        risk_per_trade,
+        spread_bps,
+        slippage_bps,
+        max_position_notional,
+        max_hold_bars,
+        stop_atr_multiple,
+        take_profit_atr_multiple,
+    )
+
+
 def _line_svg(series: pd.Series, width: int = 960, height: int = 260) -> str:
     values = series.dropna().astype(float)
     if values.empty:
@@ -168,12 +219,14 @@ def run_walk_forward(
     train_years: int,
     validation_years: int,
     test_years: int,
+    exclude_setups: set[str],
 ) -> None:
     cfg = load_config(config_path)
     df = load_ohlcv_csv(cfg.data.train_csv, cfg.data.timestamp_column)
     curves = []
     fold_rows = []
     equity_offset = cfg.backtest.initial_equity
+    blocked_setups: set[str] = set()
 
     for fold, test_year in enumerate(range(first_test_year, last_test_year + 1, test_years), start=1):
         train_start = _date(test_year - validation_years - train_years)
@@ -188,6 +241,10 @@ def run_walk_forward(
         train_candidates = generate_candidate_trades(train_df)
         validation_candidates = generate_candidate_trades(validation_df)
         test_candidates = generate_candidate_trades(test_df)
+        if exclude_setups:
+            train_candidates = train_candidates[~train_candidates["setup"].isin(exclude_setups)]
+            validation_candidates = validation_candidates[~validation_candidates["setup"].isin(exclude_setups)]
+            test_candidates = test_candidates[~test_candidates["setup"].isin(exclude_setups)]
         if train_candidates.empty or validation_candidates.empty or test_candidates.empty:
             continue
 
@@ -219,13 +276,95 @@ def run_walk_forward(
         model.fit(x_train, y_train)
         validation_prob = model.predict_proba(x_validation)[:, list(model.classes_).index(1)]
 
-        threshold_scores = []
-        for threshold in (0.45, 0.50, 0.55, 0.60, 0.65):
-            validation_bt = _simulate_candidates(
+        setup_thresholds: dict[str, float] = {}
+        setup_validation: dict[str, dict[str, float]] = {}
+        for setup in sorted(validation_meta["setup"].unique()):
+            setup_mask = validation_meta["setup"] == setup
+            best_score = -999.0
+            best_threshold = 1.01
+            best_summary: dict[str, float] = {
+                "trades": 0.0,
+                "total_return": -1.0,
+                "max_drawdown": -1.0,
+                "profit_factor": 0.0,
+            }
+            for threshold in (0.45, 0.50, 0.55, 0.60, 0.65):
+                validation_bt = _simulate_candidates(
+                    validation_df,
+                    validation_meta[setup_mask].reset_index(drop=True),
+                    validation_prob[setup_mask],
+                    threshold,
+                    cfg.backtest.initial_equity,
+                    cfg.backtest.risk_per_trade,
+                    cfg.backtest.spread_bps,
+                    cfg.backtest.slippage_bps,
+                    cfg.backtest.max_position_notional,
+                    cfg.strategy.max_hold_bars,
+                    cfg.strategy.stop_atr_multiple,
+                    cfg.strategy.take_profit_atr_multiple,
+                )
+                if validation_bt.empty:
+                    continue
+                summary = summarize_backtest(validation_bt, cfg.backtest.initial_equity)
+                if summary["trades"] < 8:
+                    score = -999.0 + summary["trades"]
+                else:
+                    score = summary["total_return"] - abs(summary["max_drawdown"])
+                if score > best_score:
+                    best_score = score
+                    best_threshold = threshold
+                    best_summary = summary
+
+            if (
+                setup not in blocked_setups
+                and best_score > 0
+                and best_summary["profit_factor"] >= 1.05
+                and best_summary["max_drawdown"] > -0.03
+            ):
+                setup_thresholds[setup] = best_threshold
+            setup_validation[setup] = best_summary
+
+        if not setup_thresholds:
+            threshold_scores = []
+            for threshold in (0.45, 0.50, 0.55, 0.60):
+                validation_bt = _simulate_candidates(
+                    validation_df,
+                    validation_meta,
+                    validation_prob,
+                    threshold,
+                    cfg.backtest.initial_equity,
+                    cfg.backtest.risk_per_trade,
+                    cfg.backtest.spread_bps,
+                    cfg.backtest.slippage_bps,
+                    cfg.backtest.max_position_notional,
+                    cfg.strategy.max_hold_bars,
+                    cfg.strategy.stop_atr_multiple,
+                    cfg.strategy.take_profit_atr_multiple,
+                )
+                if validation_bt.empty:
+                    score = -999.0
+                    summary = {
+                        "trades": 0.0,
+                        "total_return": -1.0,
+                        "max_drawdown": -1.0,
+                        "profit_factor": 0.0,
+                    }
+                else:
+                    summary = summarize_backtest(validation_bt, cfg.backtest.initial_equity)
+                    score = (
+                        -999.0 + summary["trades"]
+                        if summary["trades"] < 20
+                        else summary["total_return"] - abs(summary["max_drawdown"])
+                    )
+                threshold_scores.append((score, threshold, summary))
+            _, selected_threshold, validation_summary = max(threshold_scores, key=lambda item: item[0])
+            setup_thresholds = {setup: selected_threshold for setup in validation_meta["setup"].unique()}
+        else:
+            validation_bt = _simulate_with_setup_thresholds(
                 validation_df,
                 validation_meta,
                 validation_prob,
-                threshold,
+                setup_thresholds,
                 cfg.backtest.initial_equity,
                 cfg.backtest.risk_per_trade,
                 cfg.backtest.spread_bps,
@@ -235,24 +374,14 @@ def run_walk_forward(
                 cfg.strategy.stop_atr_multiple,
                 cfg.strategy.take_profit_atr_multiple,
             )
-            if validation_bt.empty:
-                score = -999.0
-                summary = {"trades": 0.0, "total_return": -1.0, "max_drawdown": -1.0, "profit_factor": 0.0}
-            else:
-                summary = summarize_backtest(validation_bt, cfg.backtest.initial_equity)
-                if summary["trades"] < 20:
-                    score = -999.0 + summary["trades"]
-                else:
-                    score = summary["total_return"] - abs(summary["max_drawdown"])
-            threshold_scores.append((score, threshold, summary))
-        _, selected_threshold, validation_summary = max(threshold_scores, key=lambda item: item[0])
+            validation_summary = summarize_backtest(validation_bt, cfg.backtest.initial_equity)
 
         test_prob = model.predict_proba(x_test)[:, list(model.classes_).index(1)]
-        test_bt = _simulate_candidates(
+        test_bt = _simulate_with_setup_thresholds(
             test_df,
             test_meta,
             test_prob,
-            selected_threshold,
+            setup_thresholds,
             cfg.backtest.initial_equity,
             cfg.backtest.risk_per_trade,
             cfg.backtest.spread_bps,
@@ -276,13 +405,20 @@ def run_walk_forward(
                 "fold": fold,
                 "test_start": str(test_start),
                 "test_end": str(test_end - pd.Timedelta(hours=1)),
-                "threshold": selected_threshold,
+                "thresholds": setup_thresholds,
+                "setup_validation": setup_validation,
                 "validation_summary": validation_summary,
                 "test_summary": test_summary,
             }
         )
+        failed_setups = set()
+        for setup, group in test_bt.groupby("setup"):
+            setup_summary = summarize_backtest(group, cfg.backtest.initial_equity)
+            if setup_summary["profit_factor"] < 0.9 or setup_summary["total_return"] < -0.03:
+                failed_setups.add(str(setup))
+        blocked_setups = failed_setups
         print(
-            f"fold={fold} threshold={selected_threshold:.2f} trades={test_summary['trades']:.0f} "
+            f"fold={fold} setups={','.join(sorted(setup_thresholds))} trades={test_summary['trades']:.0f} "
             f"return={test_summary['total_return']:.2%} dd={test_summary['max_drawdown']:.2%} "
             f"pf={test_summary['profit_factor']:.2f}"
         )
@@ -301,7 +437,7 @@ def run_walk_forward(
     rows = "".join(
         "<tr>"
         f"<td>{row['fold']}</td><td>{html.escape(row['test_start'][:10])} to {html.escape(row['test_end'][:10])}</td>"
-        f"<td>{row['threshold']:.2f}</td><td>{row['test_summary']['trades']:.0f}</td>"
+        f"<td>{html.escape(', '.join(sorted(row['thresholds'])))}</td><td>{row['test_summary']['trades']:.0f}</td>"
         f"<td>{_fmt_pct(row['test_summary']['total_return'])}</td>"
         f"<td>{_fmt_pct(row['test_summary']['max_drawdown'])}</td>"
         f"<td>{_fmt_pct(row['test_summary']['win_rate'])}</td>"
@@ -349,7 +485,7 @@ def run_walk_forward(
   <section>
     <h2>Folds</h2>
     <table>
-      <thead><tr><th>Fold</th><th>Test Window</th><th>Threshold</th><th>Trades</th><th>Return</th><th>DD</th><th>Win</th><th>PF</th></tr></thead>
+      <thead><tr><th>Fold</th><th>Test Window</th><th>Setups</th><th>Trades</th><th>Return</th><th>DD</th><th>Win</th><th>PF</th></tr></thead>
       <tbody>{rows}</tbody>
     </table>
   </section>
@@ -371,6 +507,7 @@ def main() -> None:
     parser.add_argument("--train-years", type=int, default=7)
     parser.add_argument("--validation-years", type=int, default=1)
     parser.add_argument("--test-years", type=int, default=2)
+    parser.add_argument("--exclude-setup", action="append", default=[])
     args = parser.parse_args()
     run_walk_forward(
         args.config,
@@ -380,6 +517,7 @@ def main() -> None:
         args.train_years,
         args.validation_years,
         args.test_years,
+        set(args.exclude_setup),
     )
 
 
