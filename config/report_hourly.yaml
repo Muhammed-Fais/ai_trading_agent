@@ -1,0 +1,26 @@
+data:
+  train_csv: data/xauusd_1h.csv
+  timestamp_column: timestamp
+  timezone: UTC
+
+features:
+  horizon_bars: 4
+  threshold_bps: 12.0
+  min_rows: 5000
+
+validation:
+  splits: 5
+  embargo_bars: 4
+
+model:
+  artifact_path: artifacts/xauusd_hourly_ensemble.joblib
+  random_state: 42
+  min_confidence: 0.54
+
+backtest:
+  initial_equity: 10000.0
+  risk_per_trade: 0.003
+  spread_bps: 3.0
+  slippage_bps: 1.0
+  max_position_notional: 30000.0
+

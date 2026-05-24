@@ -1,0 +1,27 @@
+[
+  {
+    "fold": 1,
+    "log_loss": 1.0497859572477732,
+    "classification_report": "              precision    recall  f1-score   support\n\n       short       0.42      0.41      0.41      4972\n        flat       0.45      0.39      0.42      3737\n        long       0.43      0.48      0.45      5487\n\n    accuracy                           0.43     14196\n   macro avg       0.43      0.43      0.43     14196\nweighted avg       0.43      0.43      0.43     14196\n"
+  },
+  {
+    "fold": 2,
+    "log_loss": 1.0595983856173385,
+    "classification_report": "              precision    recall  f1-score   support\n\n       short       0.42      0.32      0.36      4387\n        flat       0.44      0.55      0.49      4571\n        long       0.44      0.43      0.43      5238\n\n    accuracy                           0.43     14196\n   macro avg       0.43      0.43      0.43     14196\nweighted avg       0.43      0.43      0.43     14196\n"
+  },
+  {
+    "fold": 3,
+    "log_loss": 1.0548409511033479,
+    "classification_report": "              precision    recall  f1-score   support\n\n       short       0.40      0.27      0.32      4574\n        flat       0.48      0.60      0.53      5118\n        long       0.40      0.41      0.40      4504\n\n    accuracy                           0.44     14196\n   macro avg       0.43      0.43      0.42     14196\nweighted avg       0.43      0.44      0.42     14196\n"
+  },
+  {
+    "fold": 4,
+    "log_loss": 1.0624866758160836,
+    "classification_report": "              precision    recall  f1-score   support\n\n       short       0.38      0.27      0.32      4468\n        flat       0.47      0.62      0.53      5459\n        long       0.36      0.32      0.34      4269\n\n    accuracy                           0.42     14196\n   macro avg       0.40      0.40      0.40     14196\nweighted avg       0.41      0.42      0.41     14196\n"
+  },
+  {
+    "fold": 5,
+    "log_loss": 1.051578391091719,
+    "classification_report": "              precision    recall  f1-score   support\n\n       short       0.36      0.19      0.25      3915\n        flat       0.49      0.81      0.61      6341\n        long       0.37      0.15      0.21      3940\n\n    accuracy                           0.46     14196\n   macro avg       0.40      0.38      0.35     14196\nweighted avg       0.42      0.46      0.40     14196\n"
+  }
+]

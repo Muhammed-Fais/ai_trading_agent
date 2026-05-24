@@ -1,0 +1,35 @@
+{
+  "ema_trend": {
+    "ending_equity": 4137.230797933566,
+    "total_return": -0.5862769202066435,
+    "max_drawdown": -0.6046504646909587,
+    "trades": 4300.0,
+    "win_rate": 0.44046511627906976,
+    "avg_trade_pnl": -1.3634346981549783,
+    "profit_factor": 0.8644606549862488,
+    "gross_profit": 37392.340238455065,
+    "gross_loss": -43255.10944052147
+  },
+  "donchian_breakout": {
+    "ending_equity": 9906.86325627825,
+    "total_return": -0.009313674372175007,
+    "max_drawdown": -0.08084165922375353,
+    "trades": 679.0,
+    "win_rate": 0.46244477172312226,
+    "avg_trade_pnl": -0.13716751652687392,
+    "profit_factor": 0.9899555253069504,
+    "gross_profit": 9179.2987561851,
+    "gross_loss": -9272.43549990685
+  },
+  "hybrid": {
+    "ending_equity": 9821.551174865317,
+    "total_return": -0.017844882513468274,
+    "max_drawdown": -0.07661596197822451,
+    "trades": 513.0,
+    "win_rate": 0.4580896686159844,
+    "avg_trade_pnl": -0.34785346030157405,
+    "profit_factor": 0.9753062470979195,
+    "gross_profit": 7048.027678551038,
+    "gross_loss": -7226.476503685744
+  }
+}

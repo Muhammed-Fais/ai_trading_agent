@@ -1,0 +1,224 @@
+[
+  {
+    "fold": 1,
+    "train_start": "2006-01-02 01:00:00+00:00",
+    "train_end": "2012-12-31 19:00:00+00:00",
+    "validation_start": "2013-01-01 00:00:00+00:00",
+    "validation_end": "2013-12-31 23:00:00+00:00",
+    "test_start": "2014-01-01 00:00:00+00:00",
+    "test_end": "2015-12-31 23:00:00+00:00",
+    "selected": {
+      "min_confidence": 0.46,
+      "stop_atr": 1.6,
+      "take_profit_atr": 2.5,
+      "max_hold_bars": 16
+    },
+    "validation_summary": {
+      "ending_equity": 10657.840265713456,
+      "total_return": 0.06578402657134563,
+      "max_drawdown": -0.028938305385449836,
+      "trades": 185.0,
+      "win_rate": 0.4756756756756757,
+      "avg_trade_pnl": 3.5558933281808502,
+      "profit_factor": 1.217048203545565,
+      "gross_profit": 3688.688966450839,
+      "gross_loss": -3030.848700737381
+    },
+    "test_summary": {
+      "ending_equity": 10514.138599394753,
+      "total_return": 0.05141385993947534,
+      "max_drawdown": -0.05140894915769112,
+      "trades": 412.0,
+      "win_rate": 0.46601941747572817,
+      "avg_trade_pnl": 1.2479092218318906,
+      "profit_factor": 1.0724949553102072,
+      "gross_profit": 7606.198966833138,
+      "gross_loss": -7092.060367438399
+    }
+  },
+  {
+    "fold": 2,
+    "train_start": "2008-01-02 10:00:00+00:00",
+    "train_end": "2014-12-31 18:00:00+00:00",
+    "validation_start": "2015-01-01 00:00:00+00:00",
+    "validation_end": "2015-12-31 23:00:00+00:00",
+    "test_start": "2016-01-01 00:00:00+00:00",
+    "test_end": "2017-12-31 23:00:00+00:00",
+    "selected": {
+      "min_confidence": 0.5,
+      "stop_atr": 2.0,
+      "take_profit_atr": 3.0,
+      "max_hold_bars": 16
+    },
+    "validation_summary": {
+      "ending_equity": 10142.82607028372,
+      "total_return": 0.014282607028371919,
+      "max_drawdown": -0.018964209995825376,
+      "trades": 75.0,
+      "win_rate": 0.49333333333333335,
+      "avg_trade_pnl": 1.9043476037828793,
+      "profit_factor": 1.125240680781596,
+      "gross_profit": 1283.2388290804076,
+      "gross_loss": -1140.4127587966918
+    },
+    "test_summary": {
+      "ending_equity": 10460.834375226503,
+      "total_return": 0.046083437522650206,
+      "max_drawdown": -0.029936402511832605,
+      "trades": 195.0,
+      "win_rate": 0.49230769230769234,
+      "avg_trade_pnl": 2.3632532062897105,
+      "profit_factor": 1.1481880588842888,
+      "gross_profit": 3570.6286373021744,
+      "gross_loss": -3109.7942620756803
+    }
+  },
+  {
+    "fold": 3,
+    "train_start": "2010-01-04 01:00:00+00:00",
+    "train_end": "2016-12-30 23:00:00+00:00",
+    "validation_start": "2017-01-01 00:00:00+00:00",
+    "validation_end": "2017-12-31 23:00:00+00:00",
+    "test_start": "2018-01-01 00:00:00+00:00",
+    "test_end": "2019-12-31 23:00:00+00:00",
+    "selected": {
+      "min_confidence": 0.5,
+      "stop_atr": 2.0,
+      "take_profit_atr": 3.0,
+      "max_hold_bars": 24
+    },
+    "validation_summary": {
+      "ending_equity": 9639.956520456999,
+      "total_return": -0.036004347954300076,
+      "max_drawdown": -0.055279622102571535,
+      "trades": 130.0,
+      "win_rate": 0.4153846153846154,
+      "avg_trade_pnl": -2.7695652272538442,
+      "profit_factor": 0.8389783548652,
+      "gross_profit": 1875.9508132838305,
+      "gross_loss": -2235.9942928268306
+    },
+    "test_summary": {
+      "ending_equity": 8503.14673691684,
+      "total_return": -0.149685326308316,
+      "max_drawdown": -0.1741149721165698,
+      "trades": 305.0,
+      "win_rate": 0.39344262295081966,
+      "avg_trade_pnl": -4.90771561666614,
+      "profit_factor": 0.7384604263171894,
+      "gross_profit": 4226.384876390602,
+      "gross_loss": -5723.238139473775
+    }
+  },
+  {
+    "fold": 4,
+    "train_start": "2012-01-03 01:00:00+00:00",
+    "train_end": "2018-12-31 20:00:00+00:00",
+    "validation_start": "2019-01-01 00:00:00+00:00",
+    "validation_end": "2019-12-31 23:00:00+00:00",
+    "test_start": "2020-01-01 00:00:00+00:00",
+    "test_end": "2021-12-31 23:00:00+00:00",
+    "selected": {
+      "min_confidence": 0.5,
+      "stop_atr": 2.0,
+      "take_profit_atr": 3.0,
+      "max_hold_bars": 24
+    },
+    "validation_summary": {
+      "ending_equity": 9853.057477514649,
+      "total_return": -0.014694252248535156,
+      "max_drawdown": -0.033675570358058016,
+      "trades": 74.0,
+      "win_rate": 0.44594594594594594,
+      "avg_trade_pnl": -1.9857097633155831,
+      "profit_factor": 0.8867756104082197,
+      "gross_profit": 1150.8566797460744,
+      "gross_loss": -1297.7992022314272
+    },
+    "test_summary": {
+      "ending_equity": 9942.60607065099,
+      "total_return": -0.005739392934900889,
+      "max_drawdown": -0.029048946549763976,
+      "trades": 86.0,
+      "win_rate": 0.45348837209302323,
+      "avg_trade_pnl": -0.6673712715001906,
+      "profit_factor": 0.9616760894033535,
+      "gross_profit": 1440.2071362906404,
+      "gross_loss": -1497.6010656396572
+    }
+  },
+  {
+    "fold": 5,
+    "train_start": "2014-01-02 09:00:00+00:00",
+    "train_end": "2020-12-31 20:00:00+00:00",
+    "validation_start": "2021-01-01 00:00:00+00:00",
+    "validation_end": "2021-12-31 23:00:00+00:00",
+    "test_start": "2022-01-01 00:00:00+00:00",
+    "test_end": "2023-12-31 23:00:00+00:00",
+    "selected": {
+      "min_confidence": 0.5,
+      "stop_atr": 2.0,
+      "take_profit_atr": 3.0,
+      "max_hold_bars": 24
+    },
+    "validation_summary": {
+      "ending_equity": 10027.627587885241,
+      "total_return": 0.0027627587885241667,
+      "max_drawdown": -0.017619181391270722,
+      "trades": 32.0,
+      "win_rate": 0.4375,
+      "avg_trade_pnl": 0.863362121413803,
+      "profit_factor": 1.0490679124481588,
+      "gross_profit": 590.6755454365372,
+      "gross_loss": -563.0479575512956
+    },
+    "test_summary": {
+      "ending_equity": 9775.471141073223,
+      "total_return": -0.022452885892677688,
+      "max_drawdown": -0.03298055070266159,
+      "trades": 76.0,
+      "win_rate": 0.4342105263157895,
+      "avg_trade_pnl": -2.954327091141767,
+      "profit_factor": 0.8368769866765378,
+      "gross_profit": 1151.91002821877,
+      "gross_loss": -1376.4388871455442
+    }
+  },
+  {
+    "fold": 6,
+    "train_start": "2016-01-04 01:00:00+00:00",
+    "train_end": "2022-12-30 23:00:00+00:00",
+    "validation_start": "2023-01-01 00:00:00+00:00",
+    "validation_end": "2023-12-31 23:00:00+00:00",
+    "test_start": "2024-01-01 00:00:00+00:00",
+    "test_end": "2025-12-31 23:00:00+00:00",
+    "selected": {
+      "min_confidence": 0.5,
+      "stop_atr": 2.0,
+      "take_profit_atr": 3.0,
+      "max_hold_bars": 16
+    },
+    "validation_summary": {
+      "ending_equity": 9678.403446986933,
+      "total_return": -0.03215965530130671,
+      "max_drawdown": -0.03615885808329855,
+      "trades": 42.0,
+      "win_rate": 0.35714285714285715,
+      "avg_trade_pnl": -7.657060786025516,
+      "profit_factor": 0.6124085592212954,
+      "gross_profit": 508.13423868593134,
+      "gross_loss": -829.7307916990031
+    },
+    "test_summary": {
+      "ending_equity": 10189.244183145614,
+      "total_return": 0.018924418314561375,
+      "max_drawdown": -0.019148394864239027,
+      "trades": 60.0,
+      "win_rate": 0.5,
+      "avg_trade_pnl": 3.154069719093668,
+      "profit_factor": 1.1994647187903629,
+      "gross_profit": 1138.004366366369,
+      "gross_loss": -948.760183220749
+    }
+  }
+]
