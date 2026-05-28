@@ -84,7 +84,8 @@ That makes the model care about whether there may be enough move to pay spread a
 .venv/bin/python scripts/fetch_macro_data.py --input data/xauusd_1h.csv --output data/xauusd_1h_macro.csv --macro-output data/macro_yahoo_daily.csv
 .venv/bin/python scripts/meta_label_report.py --config config/report_hourly_macro_barrier.yaml --output reports/xauusd_meta_label_macro_no_trend_follow.html --exclude-setup trend_follow
 .venv/bin/python scripts/meta_label_report.py --config config/report_hourly_macro_barrier.yaml --output reports/xauusd_meta_label_macro_quality_no_trend_follow.html --exclude-setup trend_follow --objective quality
-.venv/bin/python scripts/paper_trade.py --config config/report_hourly_macro_barrier.yaml --candles data/xauusd_1h_macro.csv
+.venv/bin/python scripts/train_meta_artifact.py --config config/report_hourly_macro_barrier.yaml --output artifacts/xauusd_meta_label_macro_quality.joblib --exclude-setup trend_follow --objective quality --validation-years 2
+.venv/bin/python scripts/paper_trade.py --config config/report_hourly_macro_barrier.yaml --candles data/xauusd_1h_macro.csv --artifact artifacts/xauusd_meta_label_macro_quality.joblib
 ```
 
 ## References

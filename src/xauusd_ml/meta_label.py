@@ -189,6 +189,16 @@ def build_meta_dataset(
     return x.replace([np.inf, -np.inf], np.nan), y, candidates.reset_index(drop=True)
 
 
+def build_meta_features(df: pd.DataFrame, candidates: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
+    features = build_features(df)
+    candidates = candidates.copy().reset_index(drop=True)
+    candidate_features = features.reindex(candidates["timestamp"]).reset_index(drop=True)
+    side_feature = candidates["side"].map({"long": 1.0, "short": -1.0}).reset_index(drop=True)
+    setup_features = pd.get_dummies(candidates["setup"], prefix="setup", dtype=float).reset_index(drop=True)
+    x = pd.concat([candidate_features.reset_index(drop=True), side_feature.rename("side"), setup_features], axis=1)
+    return x.replace([np.inf, -np.inf], np.nan), candidates
+
+
 def make_meta_model(random_state: int) -> VotingClassifier:
     linear = Pipeline(
         steps=[
@@ -222,4 +232,156 @@ def make_meta_model(random_state: int) -> VotingClassifier:
         estimators=[("linear", linear), ("forest", forest), ("boosting", boosting)],
         voting="soft",
         weights=[1, 2, 2],
+    )
+
+
+def simulate_candidates(
+    df: pd.DataFrame,
+    candidates: pd.DataFrame,
+    probabilities: np.ndarray,
+    min_probability: float,
+    initial_equity: float,
+    risk_per_trade: float,
+    spread_bps: float,
+    slippage_bps: float,
+    max_position_notional: float,
+    max_hold_bars: int,
+    stop_atr_multiple: float,
+    take_profit_atr_multiple: float,
+) -> pd.DataFrame:
+    from xauusd_ml.features import build_features
+
+    features = build_features(df)
+    cost = (spread_bps + slippage_bps) / 10_000
+    equity = initial_equity
+    next_available_idx = 0
+    rows = []
+
+    for row, probability in zip(candidates.itertuples(index=False), probabilities, strict=True):
+        if probability < min_probability:
+            continue
+        idx = df.index.get_indexer([row.timestamp])[0]
+        if idx < 0 or idx + 1 >= len(df) or idx < next_available_idx:
+            continue
+        atr_pct = float(features["atr_pct_14"].iloc[idx])
+        if not np.isfinite(atr_pct) or atr_pct <= 0:
+            continue
+
+        direction = 1 if row.side == "long" else -1
+        entry_idx = idx + 1
+        entry_time = df.index[entry_idx]
+        entry = float(df["open"].iloc[entry_idx])
+        stop_pct = max(stop_atr_multiple * atr_pct, cost * 2)
+        target_pct = max(take_profit_atr_multiple * atr_pct, cost * 2)
+        stop = entry * (1 - direction * stop_pct)
+        target = entry * (1 + direction * target_pct)
+        exit_idx = min(entry_idx + max_hold_bars, len(df) - 1)
+        exit_price = float(df["close"].iloc[exit_idx])
+        exit_reason = "time"
+
+        for candidate_idx in range(entry_idx, exit_idx + 1):
+            high = float(df["high"].iloc[candidate_idx])
+            low = float(df["low"].iloc[candidate_idx])
+            if direction == 1:
+                hit_stop = low <= stop
+                hit_target = high >= target
+            else:
+                hit_stop = high >= stop
+                hit_target = low <= target
+            if hit_stop and hit_target:
+                exit_idx = candidate_idx
+                exit_price = stop
+                exit_reason = "stop_and_target_same_bar"
+                break
+            if hit_stop:
+                exit_idx = candidate_idx
+                exit_price = stop
+                exit_reason = "stop"
+                break
+            if hit_target:
+                exit_idx = candidate_idx
+                exit_price = target
+                exit_reason = "target"
+                break
+
+        net_return = direction * (exit_price / entry - 1) - cost
+        notional = min(equity * risk_per_trade / stop_pct, max_position_notional)
+        pnl = notional * net_return
+        equity += pnl
+        next_available_idx = exit_idx + 1
+        rows.append(
+            {
+                "timestamp": entry_time,
+                "signal": row.side,
+                "setup": row.setup,
+                "probability": probability,
+                "entry": entry,
+                "exit": exit_price,
+                "exit_reason": exit_reason,
+                "net_return": net_return,
+                "notional": notional,
+                "pnl": pnl,
+                "equity": equity,
+            }
+        )
+
+    result = pd.DataFrame(rows)
+    if result.empty:
+        return pd.DataFrame(
+            columns=[
+                "signal",
+                "setup",
+                "probability",
+                "entry",
+                "exit",
+                "exit_reason",
+                "net_return",
+                "notional",
+                "pnl",
+                "equity",
+                "drawdown",
+                "trade",
+                "win",
+            ]
+        )
+    result = result.set_index("timestamp")
+    result["drawdown"] = result["equity"] / result["equity"].cummax() - 1
+    result["trade"] = True
+    result["win"] = result["pnl"] > 0
+    return result
+
+
+def simulate_with_setup_thresholds(
+    df: pd.DataFrame,
+    candidates: pd.DataFrame,
+    probabilities: np.ndarray,
+    thresholds: dict[str, float],
+    initial_equity: float,
+    risk_per_trade: float,
+    spread_bps: float,
+    slippage_bps: float,
+    max_position_notional: float,
+    max_hold_bars: int,
+    stop_atr_multiple: float,
+    take_profit_atr_multiple: float,
+) -> pd.DataFrame:
+    keep = np.array(
+        [
+            probability >= thresholds.get(setup, 1.01)
+            for setup, probability in zip(candidates["setup"], probabilities, strict=True)
+        ]
+    )
+    return simulate_candidates(
+        df,
+        candidates[keep].reset_index(drop=True),
+        probabilities[keep],
+        0.0,
+        initial_equity,
+        risk_per_trade,
+        spread_bps,
+        slippage_bps,
+        max_position_notional,
+        max_hold_bars,
+        stop_atr_multiple,
+        take_profit_atr_multiple,
     )

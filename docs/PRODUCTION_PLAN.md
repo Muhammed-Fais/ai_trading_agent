@@ -27,6 +27,7 @@ It is not ready for live money until the remaining production controls are added
   - no-trade window around high-impact events
 - Persistent logging for every candle, feature vector, prediction, order, fill, and exit
 - Paper ledger and state files before broker execution
+- Model artifact for paper trading: `artifacts/xauusd_meta_label_macro_quality.joblib`
 - Model registry with immutable artifact versions and config snapshots
 - Daily reconciliation against broker account history
 - Monitoring alerts for missing candles, stale prices, order failures, and unusual drawdown

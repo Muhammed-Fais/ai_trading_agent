@@ -198,6 +198,16 @@ Optimizing validation thresholds for quality rather than raw return improved the
 
 Current best paper-trading candidate: `xauusd_meta_label_macro_quality_no_trend_follow`.
 
+The paper-trading artifact trained with the final two years as validation selected a stricter recent profile:
+
+- Validation return: `12.39%`
+- Validation max drawdown: `-0.92%`
+- Validation trades: `74`
+- Validation win rate: `66.22%`
+- Validation profit factor: `2.76`
+
+This is encouraging but should be treated as a recent validation result, not live proof. It is suitable for paper logging, not live money yet.
+
 This is still research, not live-ready, but it is now worth moving into paper-trading infrastructure after additional checks:
 
 - broker-native spread/fill model
