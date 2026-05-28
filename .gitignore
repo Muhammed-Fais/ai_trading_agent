@@ -9,6 +9,7 @@ artifacts/
 data/
 reports/*.trades.csv
 reports/*.joblib
+paper/
 *.joblib
 *.parquet
 *.csv

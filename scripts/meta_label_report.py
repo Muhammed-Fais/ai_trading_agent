@@ -221,6 +221,7 @@ def run_walk_forward(
     test_years: int,
     exclude_setups: set[str],
     use_regime_gate: bool,
+    objective: str,
 ) -> None:
     cfg = load_config(config_path)
     df = load_ohlcv_csv(cfg.data.train_csv, cfg.data.timestamp_column)
@@ -309,6 +310,13 @@ def run_walk_forward(
                 summary = summarize_backtest(validation_bt, cfg.backtest.initial_equity)
                 if summary["trades"] < 8:
                     score = -999.0 + summary["trades"]
+                elif objective == "quality":
+                    score = (
+                        summary["profit_factor"]
+                        + summary["win_rate"]
+                        + summary["total_return"]
+                        - abs(summary["max_drawdown"]) * 2
+                    )
                 else:
                     score = summary["total_return"] - abs(summary["max_drawdown"])
                 if score > best_score:
@@ -352,11 +360,17 @@ def run_walk_forward(
                     }
                 else:
                     summary = summarize_backtest(validation_bt, cfg.backtest.initial_equity)
-                    score = (
-                        -999.0 + summary["trades"]
-                        if summary["trades"] < 20
-                        else summary["total_return"] - abs(summary["max_drawdown"])
-                    )
+                    if summary["trades"] < 20:
+                        score = -999.0 + summary["trades"]
+                    elif objective == "quality":
+                        score = (
+                            summary["profit_factor"]
+                            + summary["win_rate"]
+                            + summary["total_return"]
+                            - abs(summary["max_drawdown"]) * 2
+                        )
+                    else:
+                        score = summary["total_return"] - abs(summary["max_drawdown"])
                 threshold_scores.append((score, threshold, summary))
             _, selected_threshold, validation_summary = max(threshold_scores, key=lambda item: item[0])
             setup_thresholds = {setup: selected_threshold for setup in validation_meta["setup"].unique()}
@@ -510,6 +524,7 @@ def main() -> None:
     parser.add_argument("--test-years", type=int, default=2)
     parser.add_argument("--exclude-setup", action="append", default=[])
     parser.add_argument("--use-regime-gate", action="store_true")
+    parser.add_argument("--objective", choices=["return", "quality"], default="return")
     args = parser.parse_args()
     run_walk_forward(
         args.config,
@@ -521,6 +536,7 @@ def main() -> None:
         args.test_years,
         set(args.exclude_setup),
         args.use_regime_gate,
+        args.objective,
     )
 
 

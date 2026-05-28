@@ -13,6 +13,7 @@ It is not ready for live money until the remaining production controls are added
 - Positioning: one open trade at a time
 - Model: soft-voting ensemble over linear, random forest, and gradient boosting classifiers
 - Regime gate: required before ML entries; current research version reduces weak-regime losses but is not yet strong enough for live use
+- Current best candidate: macro-enriched meta-label model excluding `trend_follow`, quality objective
 
 ## Minimum Live Requirements
 
@@ -25,6 +26,7 @@ It is not ready for live money until the remaining production controls are added
   - max spread
   - no-trade window around high-impact events
 - Persistent logging for every candle, feature vector, prediction, order, fill, and exit
+- Paper ledger and state files before broker execution
 - Model registry with immutable artifact versions and config snapshots
 - Daily reconciliation against broker account history
 - Monitoring alerts for missing candles, stale prices, order failures, and unusual drawdown

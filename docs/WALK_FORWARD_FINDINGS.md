@@ -188,6 +188,16 @@ Fold-level behavior improved materially, including the previously weak `2018-202
 
 Current best candidate: `xauusd_meta_label_macro_no_trend_follow`.
 
+Optimizing validation thresholds for quality rather than raw return improved the trade profile:
+
+- Total return: `22.26%`
+- Max drawdown: `-7.44%`
+- Trades: `621`
+- Win rate: `50.89%`
+- Profit factor: `1.25`
+
+Current best paper-trading candidate: `xauusd_meta_label_macro_quality_no_trend_follow`.
+
 This is still research, not live-ready, but it is now worth moving into paper-trading infrastructure after additional checks:
 
 - broker-native spread/fill model
