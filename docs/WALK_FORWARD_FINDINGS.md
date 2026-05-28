@@ -186,8 +186,6 @@ Fold-level behavior improved materially, including the previously weak `2018-202
 - Total return: `-5.63%`
 - Profit factor: `0.85`
 
-Current best candidate: `xauusd_meta_label_macro_no_trend_follow`.
-
 Optimizing validation thresholds for quality rather than raw return improved the trade profile:
 
 - Total return: `22.26%`
@@ -198,13 +196,50 @@ Optimizing validation thresholds for quality rather than raw return improved the
 
 Current best paper-trading candidate: `xauusd_meta_label_macro_quality_no_trend_follow`.
 
-The paper-trading artifact trained with the final two years as validation selected a stricter recent profile:
+## Higher-Timeframe Context Experiment
 
-- Validation return: `12.39%`
-- Validation max drawdown: `-0.92%`
-- Validation trades: `74`
-- Validation win rate: `66.22%`
-- Validation profit factor: `2.76`
+I added H4 and D1 context features to the hourly model. The features are shifted by one completed higher-timeframe bar before being forward-filled into H1 rows, so the H1 model only sees completed H4/D1 information.
+
+The macro-enriched no-`trend_follow` meta-label model with H4/D1 context is now the strongest research candidate:
+
+- Total return: `30.45%`
+- Max drawdown: `-9.97%`
+- Trades: `794`
+- Win rate: `50.00%`
+- Profit factor: `1.26`
+
+This improved return versus the previous macro-quality variant and slightly improved profit factor, but the win rate is back near `50%` and the drawdown is larger. It still has weak early folds:
+
+- Fold 1 return: `-2.86%`
+- Fold 1 max drawdown: `-9.97%`
+- Fold 1 profit factor: `0.95`
+- Fold 2 return: `-0.11%`
+- Fold 2 profit factor: `0.97`
+
+That means the model is improving, but it is still not proven enough for live money.
+
+## Stress Test
+
+I then stress-tested the higher-timeframe candidate by rerunning the same walk-forward process under worse execution assumptions.
+
+| Variant | Return | Max DD | Trades | Win Rate | Profit Factor |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Base costs | `30.45%` | `-9.97%` | `794` | `50.00%` | `1.26` |
+| 2x spread and slippage | `6.47%` | `-16.37%` | `839` | `49.11%` | `1.05` |
+| 3x spread and slippage | `-5.82%` | `-21.00%` | `759` | `50.07%` | `0.95` |
+| Half risk | `15.34%` | `-5.10%` | `859` | `49.71%` | `1.24` |
+
+The useful conclusion is mixed: the base model is positive, and half-risk keeps drawdown near `5%`, but doubled costs reduce profit factor to `1.05` and tripled costs fail. This is not a live-trading approval. It is a candidate for paper trading with real broker spreads and execution logs.
+
+Current best research candidate: `xauusd_meta_label_macro_htf_quality_no_trend_follow`.
+
+The paper-trading artifact trained with the final two years as validation selected a stricter recent profile after the H4/D1 feature update:
+
+- Validation return: `10.83%`
+- Validation max drawdown: `-2.23%`
+- Validation trades: `136`
+- Validation win rate: `53.68%`
+- Validation profit factor: `1.61`
 
 This is encouraging but should be treated as a recent validation result, not live proof. It is suitable for paper logging, not live money yet.
 

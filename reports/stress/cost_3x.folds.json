@@ -1,0 +1,543 @@
+[
+  {
+    "fold": 1,
+    "test_start": "2014-01-01 00:00:00+00:00",
+    "test_end": "2015-12-31 23:00:00+00:00",
+    "thresholds": {
+      "donchian_breakout": 0.45,
+      "donchian_reversal": 0.45,
+      "trend_pullback": 0.45,
+      "volatility_expansion": 0.5
+    },
+    "setup_validation": {
+      "donchian_breakout": {
+        "ending_equity": 10044.619846576952,
+        "total_return": 0.004461984657695206,
+        "max_drawdown": -0.007416144602029107,
+        "trades": 8.0,
+        "win_rate": 0.625,
+        "avg_trade_pnl": 5.57748082211885,
+        "profit_factor": 1.406652161209153,
+        "gross_profit": 154.34469457548772,
+        "gross_loss": -109.7248479985369
+      },
+      "donchian_reversal": {
+        "ending_equity": 10084.24860584835,
+        "total_return": 0.008424860584834937,
+        "max_drawdown": -0.0073120642966505445,
+        "trades": 11.0,
+        "win_rate": 0.6363636363636364,
+        "avg_trade_pnl": 7.658964168031818,
+        "profit_factor": 1.5388116455872893,
+        "gross_profit": 240.60863729592845,
+        "gross_loss": -156.36003144757842
+      },
+      "session_momentum": {
+        "ending_equity": 9971.717440060327,
+        "total_return": -0.002828255993967299,
+        "max_drawdown": -0.011770335361248385,
+        "trades": 19.0,
+        "win_rate": 0.5263157894736842,
+        "avg_trade_pnl": -1.488555786298487,
+        "profit_factor": 0.9028982856214623,
+        "gross_profit": 262.9847994543716,
+        "gross_loss": -291.26735939404284
+      },
+      "trend_pullback": {
+        "ending_equity": 10038.67587311594,
+        "total_return": 0.0038675873115940895,
+        "max_drawdown": -0.011564656359983827,
+        "trades": 30.0,
+        "win_rate": 0.5666666666666667,
+        "avg_trade_pnl": 1.2891957705313248,
+        "profit_factor": 1.0767499086563066,
+        "gross_profit": 542.5966437468733,
+        "gross_loss": -503.9207706309335
+      },
+      "volatility_expansion": {
+        "ending_equity": 10277.806788006505,
+        "total_return": 0.027780678800650493,
+        "max_drawdown": -0.003840269021847309,
+        "trades": 14.0,
+        "win_rate": 0.7857142857142857,
+        "avg_trade_pnl": 19.843342000464702,
+        "profit_factor": 4.125733313685779,
+        "gross_profit": 366.6841041838491,
+        "gross_loss": -88.87731617734326
+      }
+    },
+    "validation_summary": {
+      "ending_equity": 10400.005176757422,
+      "total_return": 0.04000051767574231,
+      "max_drawdown": -0.012915147321103215,
+      "trades": 55.0,
+      "win_rate": 0.6363636363636364,
+      "avg_trade_pnl": 7.272821395589429,
+      "profit_factor": 1.5248438594714118,
+      "gross_profit": 1162.146467998356,
+      "gross_loss": -762.1412912409372
+    },
+    "test_summary": {
+      "ending_equity": 8384.363724375364,
+      "total_return": -0.16156362756246367,
+      "max_drawdown": -0.17243388005185822,
+      "trades": 309.0,
+      "win_rate": 0.42718446601941745,
+      "avg_trade_pnl": -5.228596361244742,
+      "profit_factor": 0.702458824276865,
+      "gross_profit": 3814.322356816858,
+      "gross_loss": -5429.958632441483
+    }
+  },
+  {
+    "fold": 2,
+    "test_start": "2016-01-01 00:00:00+00:00",
+    "test_end": "2017-12-31 23:00:00+00:00",
+    "thresholds": {
+      "trend_pullback": 0.5,
+      "session_momentum": 0.5,
+      "donchian_reversal": 0.5,
+      "volatility_expansion": 0.5,
+      "donchian_breakout": 0.5
+    },
+    "setup_validation": {
+      "donchian_breakout": {
+        "ending_equity": 9932.201413320672,
+        "total_return": -0.006779858667932737,
+        "max_drawdown": -0.007333321916701996,
+        "trades": 5.0,
+        "win_rate": 0.4,
+        "avg_trade_pnl": -13.559717335865638,
+        "profit_factor": 0.3825122458584089,
+        "gross_profit": 41.99887282426845,
+        "gross_loss": -109.79745950359664
+      },
+      "donchian_reversal": {
+        "ending_equity": 9964.550911938337,
+        "total_return": -0.0035449088061663137,
+        "max_drawdown": -0.007837440380130234,
+        "trades": 8.0,
+        "win_rate": 0.5,
+        "avg_trade_pnl": -4.431136007707957,
+        "profit_factor": 0.7679910351252418,
+        "gross_profit": 117.34280116899433,
+        "gross_loss": -152.791889230658
+      },
+      "session_momentum": {
+        "ending_equity": 9750.70834534998,
+        "total_return": -0.024929165465002012,
+        "max_drawdown": -0.03241822654989557,
+        "trades": 68.0,
+        "win_rate": 0.45588235294117646,
+        "avg_trade_pnl": -3.6660537448532513,
+        "profit_factor": 0.7910932219550091,
+        "gross_profit": 944.0236459972984,
+        "gross_loss": -1193.3153006473196
+      },
+      "trend_pullback": {
+        "ending_equity": 10041.489409983511,
+        "total_return": 0.004148940998351058,
+        "max_drawdown": -0.011756301288281201,
+        "trades": 20.0,
+        "win_rate": 0.55,
+        "avg_trade_pnl": 2.0744704991755443,
+        "profit_factor": 1.1357149380954368,
+        "gross_profit": 347.1993824136273,
+        "gross_loss": -305.70997243011635
+      },
+      "volatility_expansion": {
+        "ending_equity": 10199.960655022967,
+        "total_return": 0.019996065502296823,
+        "max_drawdown": -0.007349101320534679,
+        "trades": 24.0,
+        "win_rate": 0.5833333333333334,
+        "avg_trade_pnl": 8.331693959290384,
+        "profit_factor": 1.5861742509666363,
+        "gross_profit": 541.089004985838,
+        "gross_loss": -341.12834996286875
+      }
+    },
+    "validation_summary": {
+      "ending_equity": 10191.577853286844,
+      "total_return": 0.019157785328684396,
+      "max_drawdown": -0.01999472201978847,
+      "trades": 76.0,
+      "win_rate": 0.5657894736842105,
+      "avg_trade_pnl": 2.5207612274583893,
+      "profit_factor": 1.1626055643138973,
+      "gross_profit": 1369.7531149710667,
+      "gross_loss": -1178.175261684229
+    },
+    "test_summary": {
+      "ending_equity": 9591.994240451266,
+      "total_return": -0.04080057595487341,
+      "max_drawdown": -0.05224276906641123,
+      "trades": 72.0,
+      "win_rate": 0.4305555555555556,
+      "avg_trade_pnl": -5.666746660399129,
+      "profit_factor": 0.707075354534582,
+      "gross_profit": 984.8635871068542,
+      "gross_loss": -1392.8693466555917
+    }
+  },
+  {
+    "fold": 3,
+    "test_start": "2018-01-01 00:00:00+00:00",
+    "test_end": "2019-12-31 23:00:00+00:00",
+    "thresholds": {
+      "trend_pullback": 0.5,
+      "session_momentum": 0.5,
+      "donchian_reversal": 0.5,
+      "volatility_expansion": 0.5,
+      "donchian_breakout": 0.5
+    },
+    "setup_validation": {
+      "donchian_breakout": {
+        "ending_equity": 10005.241988919146,
+        "total_return": 0.0005241988919146845,
+        "max_drawdown": -0.005381434648193961,
+        "trades": 7.0,
+        "win_rate": 0.42857142857142855,
+        "avg_trade_pnl": 0.748855559877669,
+        "profit_factor": 1.052957624409965,
+        "gross_profit": 104.22658230957714,
+        "gross_loss": -98.98459339043346
+      },
+      "donchian_reversal": {
+        "ending_equity": 9905.72232699455,
+        "total_return": -0.009427767300545065,
+        "max_drawdown": -0.014351578873081694,
+        "trades": 8.0,
+        "win_rate": 0.375,
+        "avg_trade_pnl": -11.784709125681328,
+        "profit_factor": 0.5071883972069474,
+        "gross_profit": 97.02803585189714,
+        "gross_loss": -191.30570885734778
+      },
+      "session_momentum": {
+        "ending_equity": 10182.105891892703,
+        "total_return": 0.01821058918927032,
+        "max_drawdown": -0.00872369154502628,
+        "trades": 26.0,
+        "win_rate": 0.6538461538461539,
+        "avg_trade_pnl": 7.004072765104106,
+        "profit_factor": 1.5272959483931874,
+        "gross_profit": 527.4639255503373,
+        "gross_loss": -345.35803365763064
+      },
+      "trend_pullback": {
+        "ending_equity": 10104.587395923454,
+        "total_return": 0.010458739592345445,
+        "max_drawdown": -0.00814515866382115,
+        "trades": 18.0,
+        "win_rate": 0.6111111111111112,
+        "avg_trade_pnl": 5.810410884636356,
+        "profit_factor": 1.4451456212423064,
+        "gross_profit": 339.5383668699356,
+        "gross_loss": -234.95097094648116
+      },
+      "volatility_expansion": {
+        "ending_equity": 10002.411320681169,
+        "total_return": 0.00024113206811682275,
+        "max_drawdown": -0.03260118614398122,
+        "trades": 51.0,
+        "win_rate": 0.5098039215686274,
+        "avg_trade_pnl": 0.047280797669969565,
+        "profit_factor": 1.0031455713549473,
+        "gross_profit": 768.9876939609939,
+        "gross_loss": -766.5763732798255
+      }
+    },
+    "validation_summary": {
+      "ending_equity": 9970.76296514763,
+      "total_return": -0.0029237034852369614,
+      "max_drawdown": -0.021380012726614828,
+      "trades": 52.0,
+      "win_rate": 0.5192307692307693,
+      "avg_trade_pnl": -0.5622506702378085,
+      "profit_factor": 0.9662283343394464,
+      "gross_profit": 836.4897298927912,
+      "gross_loss": -865.7267647451573
+    },
+    "test_summary": {
+      "ending_equity": 9976.33203110289,
+      "total_return": -0.002366796889711087,
+      "max_drawdown": -0.04870536338033504,
+      "trades": 144.0,
+      "win_rate": 0.5347222222222222,
+      "avg_trade_pnl": -0.1643608951189511,
+      "profit_factor": 0.9904065386980113,
+      "gross_profit": 2443.425830941532,
+      "gross_loss": -2467.0937998386603
+    }
+  },
+  {
+    "fold": 4,
+    "test_start": "2020-01-01 00:00:00+00:00",
+    "test_end": "2021-12-31 23:00:00+00:00",
+    "thresholds": {
+      "session_momentum": 0.55,
+      "trend_pullback": 0.55,
+      "volatility_expansion": 0.45
+    },
+    "setup_validation": {
+      "donchian_breakout": {
+        "ending_equity": 10139.940352214442,
+        "total_return": 0.013994035221444268,
+        "max_drawdown": -0.004114894824258197,
+        "trades": 6.0,
+        "win_rate": 0.8333333333333334,
+        "avg_trade_pnl": 23.32339203574014,
+        "profit_factor": 4.340089160849315,
+        "gross_profit": 181.8375428208308,
+        "gross_loss": -41.89719060638996
+      },
+      "donchian_reversal": {
+        "ending_equity": 9863.288324408766,
+        "total_return": -0.013671167559123343,
+        "max_drawdown": -0.02270861398931656,
+        "trades": 18.0,
+        "win_rate": 0.3888888888888889,
+        "avg_trade_pnl": -7.595093088401659,
+        "profit_factor": 0.6242948243872982,
+        "gross_profit": 227.16852746500916,
+        "gross_loss": -363.88020305623905
+      },
+      "session_momentum": {
+        "ending_equity": 10173.29554189806,
+        "total_return": 0.017329554189805974,
+        "max_drawdown": -0.003948784336759936,
+        "trades": 8.0,
+        "win_rate": 0.875,
+        "avg_trade_pnl": 21.661942737257625,
+        "profit_factor": 5.322818737923891,
+        "gross_profit": 213.38409346691284,
+        "gross_loss": -40.088551568851855
+      },
+      "trend_pullback": {
+        "ending_equity": 10034.210516394594,
+        "total_return": 0.0034210516394594936,
+        "max_drawdown": -0.013099679017915533,
+        "trades": 10.0,
+        "win_rate": 0.6,
+        "avg_trade_pnl": 3.421051639459219,
+        "profit_factor": 1.2259725809751236,
+        "gross_profit": 185.6028501324552,
+        "gross_loss": -151.392333737863
+      },
+      "volatility_expansion": {
+        "ending_equity": 10254.991412045634,
+        "total_return": 0.025499141204563314,
+        "max_drawdown": -0.015997009629206138,
+        "trades": 31.0,
+        "win_rate": 0.6451612903225806,
+        "avg_trade_pnl": 8.225529420826856,
+        "profit_factor": 1.6673658262237083,
+        "gross_profit": 637.0778210673562,
+        "gross_loss": -382.0864090217238
+      }
+    },
+    "validation_summary": {
+      "ending_equity": 10460.190183024857,
+      "total_return": 0.04601901830248578,
+      "max_drawdown": -0.013653925078590645,
+      "trades": 46.0,
+      "win_rate": 0.6739130434782609,
+      "avg_trade_pnl": 10.004134413583868,
+      "profit_factor": 1.8551720205671598,
+      "gross_profit": 998.316047713058,
+      "gross_loss": -538.1258646882
+    },
+    "test_summary": {
+      "ending_equity": 10660.400406352246,
+      "total_return": 0.06604004063522462,
+      "max_drawdown": -0.011454908796498686,
+      "trades": 48.0,
+      "win_rate": 0.6875,
+      "avg_trade_pnl": 13.7583417990052,
+      "profit_factor": 2.284796555986936,
+      "gross_profit": 1174.412063119926,
+      "gross_loss": -514.0116567676763
+    }
+  },
+  {
+    "fold": 5,
+    "test_start": "2022-01-01 00:00:00+00:00",
+    "test_end": "2023-12-31 23:00:00+00:00",
+    "thresholds": {
+      "donchian_reversal": 0.45,
+      "trend_pullback": 0.5,
+      "volatility_expansion": 0.5
+    },
+    "setup_validation": {
+      "donchian_breakout": {
+        "ending_equity": 9986.111259054425,
+        "total_return": -0.0013888740945574574,
+        "max_drawdown": -0.00515955907362331,
+        "trades": 6.0,
+        "win_rate": 0.5,
+        "avg_trade_pnl": -2.314790157596075,
+        "profit_factor": 0.8731768604016036,
+        "gross_profit": 95.62393150171633,
+        "gross_loss": -109.5126724472928
+      },
+      "donchian_reversal": {
+        "ending_equity": 10228.381491340142,
+        "total_return": 0.022838149134014163,
+        "max_drawdown": -0.005120491529582383,
+        "trades": 28.0,
+        "win_rate": 0.6785714285714286,
+        "avg_trade_pnl": 8.156481833576464,
+        "profit_factor": 1.7061463104893995,
+        "gross_profit": 551.8009979603196,
+        "gross_loss": -323.4195066201786
+      },
+      "session_momentum": {
+        "ending_equity": 10011.098783128211,
+        "total_return": 0.0011098783128211664,
+        "max_drawdown": -0.01569434224637334,
+        "trades": 18.0,
+        "win_rate": 0.5555555555555556,
+        "avg_trade_pnl": 0.6165990626783854,
+        "profit_factor": 1.0408909401731363,
+        "gross_profit": 282.5227973772729,
+        "gross_loss": -271.424014249062
+      },
+      "trend_pullback": {
+        "ending_equity": 10025.872173107524,
+        "total_return": 0.002587217310752399,
+        "max_drawdown": -0.01582132710844597,
+        "trades": 16.0,
+        "win_rate": 0.5625,
+        "avg_trade_pnl": 1.6170108192202486,
+        "profit_factor": 1.0942662462175792,
+        "gross_profit": 300.3306791544023,
+        "gross_loss": -274.4585060468783
+      },
+      "volatility_expansion": {
+        "ending_equity": 10093.668307850421,
+        "total_return": 0.00936683078504208,
+        "max_drawdown": -0.007538800717149963,
+        "trades": 11.0,
+        "win_rate": 0.6363636363636364,
+        "avg_trade_pnl": 8.515300713674678,
+        "profit_factor": 1.620284760035276,
+        "gross_profit": 244.6768669597803,
+        "gross_loss": -151.00855910935886
+      }
+    },
+    "validation_summary": {
+      "ending_equity": 10353.168012918344,
+      "total_return": 0.03531680129183434,
+      "max_drawdown": -0.015187926742205482,
+      "trades": 51.0,
+      "win_rate": 0.6470588235294118,
+      "avg_trade_pnl": 6.924862998398972,
+      "profit_factor": 1.5159485707445246,
+      "gross_profit": 1037.670370214771,
+      "gross_loss": -684.5023572964235
+    },
+    "test_summary": {
+      "ending_equity": 10641.079346463537,
+      "total_return": 0.06410793464635378,
+      "max_drawdown": -0.03422425103265325,
+      "trades": 87.0,
+      "win_rate": 0.6091954022988506,
+      "avg_trade_pnl": 7.368728120270577,
+      "profit_factor": 1.5513858586156344,
+      "gross_profit": 1803.7485307496568,
+      "gross_loss": -1162.669184286117
+    }
+  },
+  {
+    "fold": 6,
+    "test_start": "2024-01-01 00:00:00+00:00",
+    "test_end": "2025-12-31 23:00:00+00:00",
+    "thresholds": {
+      "donchian_breakout": 0.5,
+      "donchian_reversal": 0.5,
+      "session_momentum": 0.45,
+      "trend_pullback": 0.5,
+      "volatility_expansion": 0.55
+    },
+    "setup_validation": {
+      "donchian_breakout": {
+        "ending_equity": 10103.256981412293,
+        "total_return": 0.01032569814122919,
+        "max_drawdown": -0.004151416559586174,
+        "trades": 9.0,
+        "win_rate": 0.6666666666666666,
+        "avg_trade_pnl": 11.47299793469905,
+        "profit_factor": 1.9064115846432248,
+        "gross_profit": 217.17540783325862,
+        "gross_loss": -113.91842642096717
+      },
+      "donchian_reversal": {
+        "ending_equity": 10123.994358041029,
+        "total_return": 0.012399435804102854,
+        "max_drawdown": -0.024020954598495625,
+        "trades": 18.0,
+        "win_rate": 0.6666666666666666,
+        "avg_trade_pnl": 6.888575446723629,
+        "profit_factor": 1.5028229850590065,
+        "gross_profit": 370.5907979919049,
+        "gross_loss": -246.59643995087959
+      },
+      "session_momentum": {
+        "ending_equity": 10222.834005275501,
+        "total_return": 0.022283400527550068,
+        "max_drawdown": -0.011724848721842096,
+        "trades": 36.0,
+        "win_rate": 0.5833333333333334,
+        "avg_trade_pnl": 6.189833479874982,
+        "profit_factor": 1.496048678249897,
+        "gross_profit": 672.0520256957469,
+        "gross_loss": -449.2180204202478
+      },
+      "trend_pullback": {
+        "ending_equity": 10220.791670166893,
+        "total_return": 0.022079167016689327,
+        "max_drawdown": -0.004437500206141198,
+        "trades": 19.0,
+        "win_rate": 0.6842105263157895,
+        "avg_trade_pnl": 11.620614219310045,
+        "profit_factor": 2.0771045880690826,
+        "gross_profit": 425.77795711856254,
+        "gross_loss": -204.9862869516716
+      },
+      "volatility_expansion": {
+        "ending_equity": 10112.28430865808,
+        "total_return": 0.011228430865807937,
+        "max_drawdown": -0.006074854010946318,
+        "trades": 9.0,
+        "win_rate": 0.6666666666666666,
+        "avg_trade_pnl": 12.476034295342219,
+        "profit_factor": 2.62385372142783,
+        "gross_profit": 181.4311210688371,
+        "gross_loss": -69.14681241075711
+      }
+    },
+    "validation_summary": {
+      "ending_equity": 10682.037208516442,
+      "total_return": 0.06820372085164417,
+      "max_drawdown": -0.025327273784952475,
+      "trades": 71.0,
+      "win_rate": 0.647887323943662,
+      "avg_trade_pnl": 9.606157866428614,
+      "profit_factor": 1.7918270519299493,
+      "gross_profit": 1543.3833911886165,
+      "gross_loss": -861.3461826721848
+    },
+    "test_summary": {
+      "ending_equity": 10164.25493844626,
+      "total_return": 0.016425493844625993,
+      "max_drawdown": -0.030272700280338682,
+      "trades": 99.0,
+      "win_rate": 0.5454545454545454,
+      "avg_trade_pnl": 1.6591407923864168,
+      "profit_factor": 1.0964204739635708,
+      "gross_profit": 1867.78253683074,
+      "gross_loss": -1703.5275983844845
+    }
+  }
+]

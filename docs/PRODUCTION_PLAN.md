@@ -13,7 +13,7 @@ It is not ready for live money until the remaining production controls are added
 - Positioning: one open trade at a time
 - Model: soft-voting ensemble over linear, random forest, and gradient boosting classifiers
 - Regime gate: required before ML entries; current research version reduces weak-regime losses but is not yet strong enough for live use
-- Current best candidate: macro-enriched meta-label model excluding `trend_follow`, quality objective
+- Current best candidate: macro-enriched meta-label model excluding `trend_follow`, quality objective, with completed H4/D1 context features
 
 ## Minimum Live Requirements
 
@@ -28,6 +28,8 @@ It is not ready for live money until the remaining production controls are added
 - Persistent logging for every candle, feature vector, prediction, order, fill, and exit
 - Paper ledger and state files before broker execution
 - Model artifact for paper trading: `artifacts/xauusd_meta_label_macro_quality.joblib`
+- Research dashboard: `reports/research_dashboard.html`
+- Stress-test report: `reports/stress_test.html`
 - Model registry with immutable artifact versions and config snapshots
 - Daily reconciliation against broker account history
 - Monitoring alerts for missing candles, stale prices, order failures, and unusual drawdown
@@ -52,5 +54,6 @@ Do not promote a model to live unless it passes all of these:
 - Profit factor above `1.20`
 - Max drawdown below your personal hard limit
 - At least `300` out-of-sample trades or multiple clean walk-forward windows
+- Survives at least doubled spread/slippage without falling below profit factor `1.20`
 - No single month accounts for most of the profit
 - Paper trading matches backtest behavior closely for at least `4` weeks

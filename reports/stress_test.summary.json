@@ -1,0 +1,82 @@
+[
+  {
+    "variant": {
+      "name": "base",
+      "spread_mult": 1.0,
+      "slippage_mult": 1.0,
+      "risk_mult": 1.0
+    },
+    "report": "reports/stress/base.html",
+    "summary": {
+      "ending_equity": 13045.001005227297,
+      "total_return": 0.3045001005227297,
+      "max_drawdown": -0.09968611164979524,
+      "trades": 794.0,
+      "win_rate": 0.5,
+      "avg_trade_pnl": 3.8350138604877877,
+      "profit_factor": 1.2609729640237892,
+      "gross_profit": 14712.880153619602,
+      "gross_loss": -11667.879148392298
+    }
+  },
+  {
+    "variant": {
+      "name": "cost_2x",
+      "spread_mult": 2.0,
+      "slippage_mult": 2.0,
+      "risk_mult": 1.0
+    },
+    "report": "reports/stress/cost_2x.html",
+    "summary": {
+      "ending_equity": 10646.947318397852,
+      "total_return": 0.06469473183978525,
+      "max_drawdown": -0.16368876153331724,
+      "trades": 839.0,
+      "win_rate": 0.49106078665077474,
+      "avg_trade_pnl": 0.7710933473157,
+      "profit_factor": 1.048755471295691,
+      "gross_profit": 13916.172314179006,
+      "gross_loss": -13269.224995781133
+    }
+  },
+  {
+    "variant": {
+      "name": "cost_3x",
+      "spread_mult": 3.0,
+      "slippage_mult": 3.0,
+      "risk_mult": 1.0
+    },
+    "report": "reports/stress/cost_3x.html",
+    "summary": {
+      "ending_equity": 9418.424687191562,
+      "total_return": -0.05815753128084378,
+      "max_drawdown": -0.21001579505470513,
+      "trades": 759.0,
+      "win_rate": 0.5006587615283268,
+      "avg_trade_pnl": -0.7662388838055956,
+      "profit_factor": 0.9540987106853047,
+      "gross_profit": 12088.554905565565,
+      "gross_loss": -12670.130218374014
+    }
+  },
+  {
+    "variant": {
+      "name": "half_risk",
+      "spread_mult": 1.0,
+      "slippage_mult": 1.0,
+      "risk_mult": 0.5
+    },
+    "report": "reports/stress/half_risk.html",
+    "summary": {
+      "ending_equity": 11533.569528779799,
+      "total_return": 0.1533569528779799,
+      "max_drawdown": -0.05097203942100548,
+      "trades": 859.0,
+      "win_rate": 0.4970896391152503,
+      "avg_trade_pnl": 1.7852963082419078,
+      "profit_factor": 1.2424098445949905,
+      "gross_profit": 7859.919563540269,
+      "gross_loss": -6326.350034760471
+    }
+  }
+]

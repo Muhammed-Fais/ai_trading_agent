@@ -23,6 +23,44 @@ def _atr(df: pd.DataFrame, window: int = 14) -> pd.Series:
     return true_range.ewm(alpha=1 / window, adjust=False).mean()
 
 
+def _higher_timeframe_features(df: pd.DataFrame, rule: str, prefix: str) -> pd.DataFrame:
+    htf = (
+        df.resample(rule)
+        .agg(
+            open=("open", "first"),
+            high=("high", "max"),
+            low=("low", "min"),
+            close=("close", "last"),
+            volume=("volume", "sum"),
+        )
+        .dropna(subset=["open", "high", "low", "close"])
+    )
+    close = htf["close"]
+    ema_fast = close.ewm(span=21, adjust=False).mean()
+    ema_slow = close.ewm(span=89, adjust=False).mean()
+    high_lookback = htf["high"].rolling(55, min_periods=1).max()
+    low_lookback = htf["low"].rolling(55, min_periods=1).min()
+    context = pd.DataFrame(index=htf.index)
+    context[f"{prefix}_trend"] = ema_fast / ema_slow - 1
+    context[f"{prefix}_trend_slope"] = ema_fast.pct_change(3)
+    donchian_range = (high_lookback - low_lookback).replace(0, np.nan)
+    context[f"{prefix}_donchian_pos"] = (close - low_lookback) / donchian_range
+    context[f"{prefix}_range_pct"] = (htf["high"] - htf["low"]) / close
+    context[f"{prefix}_ret_1"] = close.pct_change()
+
+    # Shift by one completed higher-timeframe bar before mapping to H1 rows.
+    context = context.shift(1)
+    mapped = context.reindex(df.index, method="ffill")
+    neutral_values = {
+        f"{prefix}_trend": 0.0,
+        f"{prefix}_trend_slope": 0.0,
+        f"{prefix}_donchian_pos": 0.5,
+        f"{prefix}_range_pct": 0.0,
+        f"{prefix}_ret_1": 0.0,
+    }
+    return mapped.fillna(neutral_values)
+
+
 def build_features(df: pd.DataFrame) -> pd.DataFrame:
     close = df["close"]
     features = pd.DataFrame(index=df.index)
@@ -68,6 +106,8 @@ def build_features(df: pd.DataFrame) -> pd.DataFrame:
     features["dow_cos"] = np.cos(dow_angle)
     features["is_london_ny_overlap"] = df.index.hour.isin([13, 14, 15, 16]).astype(float)
     features["is_asia_session"] = df.index.hour.isin([0, 1, 2, 3, 4, 5, 6]).astype(float)
+    features = features.join(_higher_timeframe_features(df, "4h", "h4"))
+    features = features.join(_higher_timeframe_features(df, "1D", "d1"))
 
     macro_columns = [column for column in df.columns if column.startswith("macro_")]
     for column in macro_columns:

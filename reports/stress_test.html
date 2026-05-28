@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>XAUUSD Stress Test</title>
+  <style>
+    body { margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; background:#f8fafc; color:#111827; }
+    main { max-width: 1080px; margin: 0 auto; padding: 32px 20px; }
+    section { background:#fff; border:1px solid #e5e7eb; border-radius:8px; padding:18px; }
+    .verdict { display:inline-block; padding:6px 10px; border-radius:6px; background:#eef2ff; color:#1d4ed8; font-weight:700; }
+    table { width:100%; border-collapse:collapse; margin-top:14px; font-size:13px; }
+    th,td { border-bottom:1px solid #e5e7eb; padding:8px; text-align:left; }
+    th { background:#f9fafb; }
+    p { color:#475467; }
+  </style>
+</head>
+<body>
+<main>
+  <section>
+    <h1>XAUUSD Stress Test</h1>
+    <p>Current candidate: macro-enriched meta-label, no trend_follow, quality objective, H4/D1 context features.</p>
+    <p>Verdict: <span class="verdict">WATCH</span></p>
+    <table>
+      <thead><tr><th>Variant</th><th>Spread</th><th>Slippage</th><th>Risk</th><th>Return</th><th>Max DD</th><th>Trades</th><th>Win</th><th>PF</th></tr></thead>
+      <tbody><tr><td><a href='stress/base.html'>base</a></td><td>1.0x</td><td>1.0x</td><td>1.0x</td><td>30.45%</td><td>-9.97%</td><td>794</td><td>50.00%</td><td>1.26</td></tr><tr><td><a href='stress/cost_2x.html'>cost_2x</a></td><td>2.0x</td><td>2.0x</td><td>1.0x</td><td>6.47%</td><td>-16.37%</td><td>839</td><td>49.11%</td><td>1.05</td></tr><tr><td><a href='stress/cost_3x.html'>cost_3x</a></td><td>3.0x</td><td>3.0x</td><td>1.0x</td><td>-5.82%</td><td>-21.00%</td><td>759</td><td>50.07%</td><td>0.95</td></tr><tr><td><a href='stress/half_risk.html'>half_risk</a></td><td>1.0x</td><td>1.0x</td><td>0.5x</td><td>15.34%</td><td>-5.10%</td><td>859</td><td>49.71%</td><td>1.24</td></tr></tbody>
+    </table>
+  </section>
+</main>
+</body>
+</html>

@@ -7,6 +7,9 @@ This is not financial advice and it does not guarantee profitable trades. Treat 
 ## What It Builds
 
 - Leakage-safe technical features from OHLCV candles
+- Completed H4/D1 context features mapped into H1 rows
+- Optional macro proxy features for volatility, yields, dollar strength, and risk sentiment
+- Meta-label accept/reject models for rule-based trade candidates
 - Triple-class labels: `short`, `flat`, `long`
 - Time-series cross-validation
 - Ensemble model:
@@ -84,6 +87,8 @@ That makes the model care about whether there may be enough move to pay spread a
 .venv/bin/python scripts/fetch_macro_data.py --input data/xauusd_1h.csv --output data/xauusd_1h_macro.csv --macro-output data/macro_yahoo_daily.csv
 .venv/bin/python scripts/meta_label_report.py --config config/report_hourly_macro_barrier.yaml --output reports/xauusd_meta_label_macro_no_trend_follow.html --exclude-setup trend_follow
 .venv/bin/python scripts/meta_label_report.py --config config/report_hourly_macro_barrier.yaml --output reports/xauusd_meta_label_macro_quality_no_trend_follow.html --exclude-setup trend_follow --objective quality
+.venv/bin/python scripts/meta_label_report.py --config config/report_hourly_macro_barrier.yaml --output reports/xauusd_meta_label_macro_htf_quality_no_trend_follow.html --exclude-setup trend_follow --objective quality
+.venv/bin/python scripts/stress_test_report.py --config config/report_hourly_macro_barrier.yaml --output reports/stress_test.html --output-dir reports/stress
 .venv/bin/python scripts/train_meta_artifact.py --config config/report_hourly_macro_barrier.yaml --output artifacts/xauusd_meta_label_macro_quality.joblib --exclude-setup trend_follow --objective quality --validation-years 2
 .venv/bin/python scripts/paper_trade.py --config config/report_hourly_macro_barrier.yaml --candles data/xauusd_1h_macro.csv --artifact artifacts/xauusd_meta_label_macro_quality.joblib
 .venv/bin/python scripts/build_research_dashboard.py --output reports/research_dashboard.html

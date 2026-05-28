@@ -11,6 +11,14 @@ import pandas as pd
 
 REPORTS = [
     {
+        "name": "Macro HTF Meta-Label Quality",
+        "slug": "macro_htf_quality",
+        "summary": "reports/xauusd_meta_label_macro_htf_quality_no_trend_follow.summary.json",
+        "folds": "reports/xauusd_meta_label_macro_htf_quality_no_trend_follow.folds.json",
+        "trades": "reports/xauusd_meta_label_macro_htf_quality_no_trend_follow.trades.csv",
+        "note": "Current best research candidate; macro features, H4/D1 context, no trend_follow, quality objective.",
+    },
+    {
         "name": "Macro Meta-Label Quality",
         "slug": "macro_quality",
         "summary": "reports/xauusd_meta_label_macro_quality_no_trend_follow.summary.json",
@@ -302,4 +310,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
