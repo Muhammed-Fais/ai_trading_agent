@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>XAUUSD Meta-Label Walk-Forward</title>
+  <style>
+    body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: #111827; background: #f8fafc; }
+    main { max-width: 1100px; margin: 0 auto; padding: 32px 20px; }
+    .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; }
+    .metrics div, section { background: white; border: 1px solid #e5e7eb; border-radius: 8px; padding: 14px; }
+    span { display: block; color: #6b7280; font-size: 13px; }
+    strong { display: block; margin-top: 6px; font-size: 22px; }
+    section { margin-top: 16px; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th, td { border-bottom: 1px solid #e5e7eb; padding: 8px; text-align: left; }
+    th { background: #f9fafb; }
+    svg { width: 100%; height: auto; border: 1px solid #eef2f7; }
+  </style>
+</head>
+<body>
+<main>
+  <h1>XAUUSD Meta-Label Walk-Forward</h1>
+  <p>Rule-generated candidate trades filtered by an ML accept/reject model. Regime gate: True.</p>
+  <div class="metrics"><div><span>Ending Equity</span><strong>$9,436.88</strong></div><div><span>Total Return</span><strong>-5.63%</strong></div><div><span>Max Drawdown</span><strong>-8.77%</strong></div><div><span>Trades</span><strong>224</strong></div><div><span>Win Rate</span><strong>41.52%</strong></div><div><span>Profit Factor</span><strong>0.85</strong></div></div>
+  <section><h2>Combined Equity</h2><svg viewBox="0 0 960 260"><polyline fill="none" stroke="#2563eb" stroke-width="2" points="20.0,64.2 24.1,53.7 28.3,61.6 32.4,69.8 36.5,77.9 40.6,67.5 44.8,75.6 48.9,76.1 53.0,65.8 57.1,73.9 61.3,63.5 65.4,53.0 69.5,42.4 73.6,31.8 77.8,39.8 81.9,41.4 86.0,30.7 90.1,20.0 94.3,28.0 98.4,36.0 102.5,43.8 106.6,51.6 110.8,59.4 114.9,67.2 119.0,61.6 123.1,63.1 127.3,62.4 131.4,51.7 135.5,58.1 139.6,66.0 143.8,73.9 147.9,81.8 152.0,81.6 156.1,85.7 160.3,93.6 164.4,95.4 168.5,95.6 172.6,103.4 176.8,111.2 180.9,118.9 185.0,108.5 189.1,116.2 193.3,111.5 197.4,119.4 201.5,127.1 205.7,130.0 209.8,135.7 213.9,143.4 218.0,133.1 222.2,122.7 226.3,130.6 230.4,138.5 234.5,146.6 238.7,154.8 242.8,162.6 246.9,170.7 251.0,160.4 255.2,160.2 259.3,168.2 263.4,176.2 267.5,180.6 271.7,188.2 275.8,189.3 279.9,179.1 284.0,176.5 288.2,174.5 292.3,178.3 296.4,168.1 300.5,176.1 304.7,174.0 308.8,182.1 312.9,190.2 317.0,193.3 321.2,191.1 325.3,181.4 329.4,189.7 333.5,198.0 337.7,191.3 341.8,199.5 345.9,196.5 350.0,204.4 354.2,194.4 358.3,184.5 362.4,174.6 366.5,183.4 370.7,192.0 374.8,197.0 378.9,205.8 383.0,195.4 387.2,203.4 391.3,211.4 395.4,219.3 399.6,209.2 403.7,217.1 407.8,206.8 411.9,196.7 416.1,186.3 420.2,181.4 424.3,176.7 428.4,177.9 432.6,167.6 436.7,176.2 440.8,166.0 444.9,165.4 449.1,164.3 453.2,172.5 457.3,180.8 461.4,189.1 465.6,186.2 469.7,194.5 473.8,203.2 477.9,211.4 482.1,201.1 486.2,199.4 490.3,189.4 494.4,197.6 498.6,206.2 502.7,214.6 506.8,204.6 510.9,195.7 515.1,185.6 519.2,194.0 523.3,202.2 527.4,210.9 531.6,219.0 535.7,225.1 539.8,214.9 543.9,204.4 548.1,212.2 552.2,220.0 556.3,209.5 560.4,203.6 564.6,193.0 568.7,182.9 572.8,173.0 577.0,180.8 581.1,170.3 585.2,178.0 589.3,167.3 593.5,156.5 597.6,158.5 601.7,166.3 605.8,170.3 610.0,178.2 614.1,185.9 618.2,175.2 622.3,178.9 626.5,179.1 630.6,186.9 634.7,176.4 638.8,169.7 643.0,159.2 647.1,148.6 651.2,156.4 655.3,164.2 659.5,172.1 663.6,179.9 667.7,169.3 671.8,158.7 676.0,166.5 680.1,165.8 684.2,173.8 688.3,181.8 692.5,189.6 696.6,197.5 700.7,205.4 704.8,209.2 709.0,217.1 713.1,207.0 717.2,204.1 721.3,211.9 725.5,201.7 729.6,207.2 733.7,214.9 737.8,204.5 742.0,212.5 746.1,220.7 750.2,228.7 754.3,226.6 758.5,216.1 762.6,224.0 766.7,231.8 770.9,240.0 775.0,229.7 779.1,219.6 783.2,209.4 787.4,199.4 791.5,207.7 795.6,215.9 799.7,205.8 803.9,214.2 808.0,222.5 812.1,230.8 816.2,220.8 820.4,210.7 824.5,200.4 828.6,190.0 832.7,198.2 836.9,187.9 841.0,177.5 845.1,167.1 849.2,175.2 853.4,183.4 857.5,188.1 861.6,177.8 865.7,185.8 869.9,175.2 874.0,183.1 878.1,191.0 882.2,180.5 886.4,185.1 890.5,189.2 894.6,197.2 898.7,205.1 902.9,212.9 907.0,220.7 911.1,210.3 915.2,200.0 919.4,207.8 923.5,197.5 927.6,205.5 931.7,213.4 935.9,205.1 940.0,212.9" /></svg></section>
+  <section>
+    <h2>Folds</h2>
+    <table>
+      <thead><tr><th>Fold</th><th>Test Window</th><th>Setups</th><th>Trades</th><th>Return</th><th>DD</th><th>Win</th><th>PF</th></tr></thead>
+      <tbody><tr><td>1</td><td>2014-01-01 to 2015-12-31</td><td>session_momentum, volatility_expansion</td><td>49</td><td>-2.38%</td><td>-4.92%</td><td>34.69%</td><td>0.72</td></tr><tr><td>2</td><td>2016-01-01 to 2017-12-31</td><td>donchian_breakout, donchian_reversal, session_momentum, trend_pullback, volatility_expansion</td><td>39</td><td>-2.96%</td><td>-3.37%</td><td>38.46%</td><td>0.58</td></tr><tr><td>3</td><td>2018-01-01 to 2019-12-31</td><td>donchian_breakout, donchian_reversal, session_momentum, trend_pullback, volatility_expansion</td><td>47</td><td>1.33%</td><td>-2.43%</td><td>53.19%</td><td>1.19</td></tr><tr><td>4</td><td>2020-01-01 to 2021-12-31</td><td>session_momentum</td><td>39</td><td>-1.71%</td><td>-2.76%</td><td>35.90%</td><td>0.75</td></tr><tr><td>5</td><td>2022-01-01 to 2023-12-31</td><td>donchian_reversal</td><td>25</td><td>1.10%</td><td>-1.44%</td><td>52.00%</td><td>1.28</td></tr><tr><td>6</td><td>2024-01-01 to 2025-12-31</td><td>session_momentum</td><td>25</td><td>-1.02%</td><td>-2.16%</td><td>36.00%</td><td>0.78</td></tr></tbody>
+    </table>
+  </section>
+</main>
+</body>
+</html>

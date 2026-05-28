@@ -69,6 +69,15 @@ def build_features(df: pd.DataFrame) -> pd.DataFrame:
     features["is_london_ny_overlap"] = df.index.hour.isin([13, 14, 15, 16]).astype(float)
     features["is_asia_session"] = df.index.hour.isin([0, 1, 2, 3, 4, 5, 6]).astype(float)
 
+    macro_columns = [column for column in df.columns if column.startswith("macro_")]
+    for column in macro_columns:
+        series = pd.to_numeric(df[column], errors="coerce").ffill()
+        features[column] = series
+        features[f"{column}_chg_24"] = series.diff(24)
+        features[f"{column}_chg_120"] = series.diff(120)
+        rolling_std = series.rolling(500).std()
+        features[f"{column}_z_500"] = (series - series.rolling(500).mean()) / rolling_std
+
     return features.replace([np.inf, -np.inf], np.nan)
 
 

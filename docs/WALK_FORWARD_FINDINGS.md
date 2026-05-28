@@ -164,6 +164,37 @@ I tested setup-specific regime gates on the no-`trend_follow` meta-label system.
 
 This made the result worse than the ungated no-`trend_follow` version. The gate helped some later folds but damaged earlier folds too much. Current best research baseline remains the ungated no-`trend_follow` meta-label variant.
 
+## Macro Feature Experiment
+
+I added daily macro proxy features and forward-filled them into the H1 XAUUSD candles:
+
+- VIX
+- US 10Y yield proxy
+- US dollar index proxy
+- S&P 500 risk sentiment proxy
+
+The macro-enriched no-`trend_follow` meta-label model is the first result to pass the rough research threshold:
+
+- Total return: `24.80%`
+- Max drawdown: `-8.31%`
+- Trades: `784`
+- Win rate: `49.49%`
+- Profit factor: `1.21`
+
+Fold-level behavior improved materially, including the previously weak `2018-2020` period. A setup-regime gate on top of macro features still hurt performance:
+
+- Total return: `-5.63%`
+- Profit factor: `0.85`
+
+Current best candidate: `xauusd_meta_label_macro_no_trend_follow`.
+
+This is still research, not live-ready, but it is now worth moving into paper-trading infrastructure after additional checks:
+
+- broker-native spread/fill model
+- untouched final holdout
+- paper trading on the same execution path
+- kill switches and monitoring
+
 Next research should focus on:
 
 - Regime filters to avoid weak periods
