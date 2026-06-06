@@ -1,0 +1,32 @@
+data:
+  train_csv: data/xauusd_5m.csv
+  timestamp_column: timestamp
+  timezone: UTC
+
+features:
+  horizon_bars: 12
+  threshold_bps: 6.0
+  min_rows: 10000
+  label_mode: barrier
+
+validation:
+  splits: 5
+  embargo_bars: 48
+
+model:
+  artifact_path: artifacts/xauusd_m5_ensemble.joblib
+  random_state: 42
+  min_confidence: 0.52
+
+backtest:
+  initial_equity: 10000.0
+  risk_per_trade: 0.0015
+  spread_bps: 2.0
+  slippage_bps: 1.0
+  max_position_notional: 20000.0
+
+strategy:
+  max_hold_bars: 24
+  stop_atr_multiple: 1.8
+  take_profit_atr_multiple: 2.4
+  allow_overlapping_trades: false
