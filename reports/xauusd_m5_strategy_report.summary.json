@@ -1,4 +1,26 @@
 {
+  "vwap_6am_ist": {
+    "ending_equity": 9814.186698724396,
+    "total_return": -0.01858133012756047,
+    "max_drawdown": -0.019388659039968448,
+    "trades": 20.0,
+    "win_rate": 0.3,
+    "avg_trade_pnl": -9.290665063780457,
+    "profit_factor": 0.2462774562289808,
+    "gross_profit": 60.71415476404887,
+    "gross_loss": -246.52745603965803
+  },
+  "vwap_6am_ist_color": {
+    "ending_equity": 9840.586273704346,
+    "total_return": -0.01594137262956541,
+    "max_drawdown": -0.016750873208440487,
+    "trades": 16.0,
+    "win_rate": 0.25,
+    "avg_trade_pnl": -9.963357893478623,
+    "profit_factor": 0.2628246926357016,
+    "gross_profit": 56.83568507655265,
+    "gross_loss": -216.24941137221063
+  },
   "london_or_breakout": {
     "ending_equity": 9462.227410953796,
     "total_return": -0.053777258904620484,

@@ -125,8 +125,39 @@ def _momentum_signal(df: pd.DataFrame) -> pd.Series:
     return signal
 
 
+def _ist_daily_vwap(df: pd.DataFrame) -> pd.Series:
+    typical_price = (df["high"] + df["low"] + df["close"]) / 3
+    volume = df["volume"].replace(0, np.nan)
+    ist_day = df.index.tz_convert("Asia/Kolkata").date
+    weighted_price = typical_price * volume
+    cumulative_weighted = weighted_price.groupby(ist_day).cumsum()
+    cumulative_volume = volume.groupby(ist_day).cumsum()
+    vwap = cumulative_weighted / cumulative_volume
+    fallback = typical_price.groupby(ist_day).expanding().mean().reset_index(level=0, drop=True)
+    return vwap.fillna(fallback)
+
+
+def _vwap_6am_ist_signal(df: pd.DataFrame, require_candle_color: bool) -> pd.Series:
+    vwap = _ist_daily_vwap(df)
+    signal = pd.Series("flat", index=df.index, dtype="object")
+    ist_index = df.index.tz_convert("Asia/Kolkata")
+    signal_bar = (ist_index.hour == 6) & (ist_index.minute == 0)
+    above_vwap = df["close"] > vwap
+    below_vwap = df["close"] < vwap
+    bullish = df["close"] > df["open"]
+    bearish = df["close"] < df["open"]
+    if require_candle_color:
+        above_vwap = above_vwap & bullish
+        below_vwap = below_vwap & bearish
+    signal[signal_bar & above_vwap] = "long"
+    signal[signal_bar & below_vwap] = "short"
+    return signal
+
+
 def build_signals(df: pd.DataFrame) -> dict[str, pd.Series]:
     return {
+        "vwap_6am_ist": _vwap_6am_ist_signal(df, require_candle_color=False),
+        "vwap_6am_ist_color": _vwap_6am_ist_signal(df, require_candle_color=True),
         "london_or_breakout": _session_breakout_signal(df, 7, 8, 12, trend_filter=True),
         "ny_or_breakout": _session_breakout_signal(df, 13, 14, 18, trend_filter=True),
         "m5_mean_reversion": _mean_reversion_signal(df),
@@ -229,24 +260,150 @@ def run_rule_backtest(
     return result
 
 
+def run_vwap_6am_backtest(
+    df: pd.DataFrame,
+    signals: pd.Series,
+    initial_equity: float,
+    risk_per_trade: float,
+    spread_bps: float,
+    slippage_bps: float,
+    max_position_notional: float,
+    max_hold_bars: int,
+    reward_risk: float = 2.0,
+) -> pd.DataFrame:
+    equity = initial_equity
+    cost = (spread_bps + slippage_bps) / 10_000
+    rows = []
+
+    for feature_time, label in signals.items():
+        bar_idx = df.index.get_indexer([feature_time])[0]
+        if bar_idx < 0 or bar_idx + 1 >= len(df):
+            continue
+        direction = {"long": 1, "short": -1, "flat": 0}[label]
+        if direction == 0:
+            continue
+
+        entry_idx = bar_idx + 1
+        entry_time = df.index[entry_idx]
+        entry = float(df["open"].iloc[entry_idx])
+        signal_high = float(df["high"].iloc[bar_idx])
+        signal_low = float(df["low"].iloc[bar_idx])
+        if direction == 1:
+            stop = signal_low
+            stop_pct = (entry - stop) / entry
+            target = entry * (1 + reward_risk * stop_pct)
+        else:
+            stop = signal_high
+            stop_pct = (stop - entry) / entry
+            target = entry * (1 - reward_risk * stop_pct)
+        stop_pct = max(stop_pct, cost * 2)
+        if direction == 1:
+            stop = entry * (1 - stop_pct)
+            target = entry * (1 + reward_risk * stop_pct)
+        else:
+            stop = entry * (1 + stop_pct)
+            target = entry * (1 - reward_risk * stop_pct)
+
+        exit_idx = min(entry_idx + max_hold_bars, len(df) - 1)
+        exit_price = float(df["close"].iloc[exit_idx])
+        exit_reason = "time"
+        for candidate_idx in range(entry_idx, exit_idx + 1):
+            high = float(df["high"].iloc[candidate_idx])
+            low = float(df["low"].iloc[candidate_idx])
+            if direction == 1:
+                hit_stop = low <= stop
+                hit_target = high >= target
+            else:
+                hit_stop = high >= stop
+                hit_target = low <= target
+            if hit_stop and hit_target:
+                exit_idx = candidate_idx
+                exit_price = stop
+                exit_reason = "stop_and_target_same_bar"
+                break
+            if hit_stop:
+                exit_idx = candidate_idx
+                exit_price = stop
+                exit_reason = "stop"
+                break
+            if hit_target:
+                exit_idx = candidate_idx
+                exit_price = target
+                exit_reason = "target"
+                break
+
+        net_return = direction * (exit_price / entry - 1) - cost
+        notional = min(equity * risk_per_trade / stop_pct, max_position_notional)
+        pnl = notional * net_return
+        equity += pnl
+        rows.append(
+            {
+                "timestamp": entry_time,
+                "signal": label,
+                "entry": entry,
+                "exit": exit_price,
+                "exit_reason": exit_reason,
+                "net_return": net_return,
+                "notional": notional,
+                "pnl": pnl,
+                "equity": equity,
+            }
+        )
+
+    result = pd.DataFrame(rows)
+    if result.empty:
+        return pd.DataFrame(
+            columns=[
+                "signal",
+                "entry",
+                "exit",
+                "exit_reason",
+                "net_return",
+                "notional",
+                "pnl",
+                "equity",
+                "drawdown",
+                "trade",
+                "win",
+            ]
+        )
+    result = result.set_index("timestamp")
+    result["drawdown"] = result["equity"] / result["equity"].cummax() - 1
+    result["trade"] = True
+    result["win"] = result["pnl"] > 0
+    return result
+
+
 def generate(config_path: Path, output_path: Path) -> None:
     cfg = load_config(config_path)
     df = load_ohlcv_csv(cfg.data.train_csv, cfg.data.timestamp_column)
     reports = {}
     curves = {}
     for name, signals in build_signals(df).items():
-        bt = run_rule_backtest(
-            df,
-            signals,
-            cfg.backtest.initial_equity,
-            cfg.backtest.risk_per_trade,
-            cfg.backtest.spread_bps,
-            cfg.backtest.slippage_bps,
-            cfg.backtest.max_position_notional,
-            cfg.strategy.max_hold_bars,
-            cfg.strategy.stop_atr_multiple,
-            cfg.strategy.take_profit_atr_multiple,
-        )
+        if name.startswith("vwap_6am_ist"):
+            bt = run_vwap_6am_backtest(
+                df,
+                signals,
+                cfg.backtest.initial_equity,
+                cfg.backtest.risk_per_trade,
+                cfg.backtest.spread_bps,
+                cfg.backtest.slippage_bps,
+                cfg.backtest.max_position_notional,
+                cfg.strategy.max_hold_bars,
+            )
+        else:
+            bt = run_rule_backtest(
+                df,
+                signals,
+                cfg.backtest.initial_equity,
+                cfg.backtest.risk_per_trade,
+                cfg.backtest.spread_bps,
+                cfg.backtest.slippage_bps,
+                cfg.backtest.max_position_notional,
+                cfg.strategy.max_hold_bars,
+                cfg.strategy.stop_atr_multiple,
+                cfg.strategy.take_profit_atr_multiple,
+            )
         summary = summarize_backtest(bt, cfg.backtest.initial_equity) if not bt.empty else {
             "ending_equity": cfg.backtest.initial_equity,
             "total_return": 0.0,
@@ -307,7 +464,7 @@ def generate(config_path: Path, output_path: Path) -> None:
 <body>
 <main>
   <h1>XAUUSD M5 Strategy Report</h1>
-  <p>Data window: {df.index.min()} to {df.index.max()}. This is a short broker-export sample, so treat the result as a first filter, not production evidence.</p>
+  <p>Data window: {df.index.min()} to {df.index.max()}. VWAP is anchored to each IST day; because this broker export has no usable volume, VWAP falls back to an intraday typical-price average. This is a short broker-export sample, so treat the result as a first filter, not production evidence.</p>
   <section>
     <h2>Strategy Comparison</h2>
     <table>

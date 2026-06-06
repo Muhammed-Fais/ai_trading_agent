@@ -23,12 +23,12 @@
 <body>
 <main>
   <h1>XAUUSD M5 Strategy Report</h1>
-  <p>Data window: 2025-01-02 01:00:00+00:00 to 2026-02-10 11:20:00+00:00. This is a short broker-export sample, so treat the result as a first filter, not production evidence.</p>
+  <p>Data window: 2025-01-02 01:00:00+00:00 to 2026-02-10 11:20:00+00:00. VWAP is anchored to each IST day; because this broker export has no usable volume, VWAP falls back to an intraday typical-price average. This is a short broker-export sample, so treat the result as a first filter, not production evidence.</p>
   <section>
     <h2>Strategy Comparison</h2>
     <table>
       <thead><tr><th>Strategy</th><th>Trades</th><th>Return</th><th>Max DD</th><th>Win</th><th>PF</th><th>Avg PnL</th></tr></thead>
-      <tbody><tr><td>london_or_breakout</td><td>249</td><td>-5.38%</td><td>-5.41%</td><td>46.59%</td><td>0.77</td><td>$-2.16</td></tr><tr><td>ny_or_breakout</td><td>274</td><td>-7.68%</td><td>-8.70%</td><td>43.07%</td><td>0.71</td><td>$-2.80</td></tr><tr><td>m5_session_momentum</td><td>1474</td><td>-37.15%</td><td>-37.17%</td><td>42.61%</td><td>0.68</td><td>$-2.52</td></tr><tr><td>m5_mean_reversion</td><td>344</td><td>-14.27%</td><td>-14.67%</td><td>39.53%</td><td>0.59</td><td>$-4.15</td></tr></tbody>
+      <tbody><tr><td>london_or_breakout</td><td>249</td><td>-5.38%</td><td>-5.41%</td><td>46.59%</td><td>0.77</td><td>$-2.16</td></tr><tr><td>ny_or_breakout</td><td>274</td><td>-7.68%</td><td>-8.70%</td><td>43.07%</td><td>0.71</td><td>$-2.80</td></tr><tr><td>m5_session_momentum</td><td>1474</td><td>-37.15%</td><td>-37.17%</td><td>42.61%</td><td>0.68</td><td>$-2.52</td></tr><tr><td>m5_mean_reversion</td><td>344</td><td>-14.27%</td><td>-14.67%</td><td>39.53%</td><td>0.59</td><td>$-4.15</td></tr><tr><td>vwap_6am_ist_color</td><td>16</td><td>-1.59%</td><td>-1.68%</td><td>25.00%</td><td>0.26</td><td>$-9.96</td></tr><tr><td>vwap_6am_ist</td><td>20</td><td>-1.86%</td><td>-1.94%</td><td>30.00%</td><td>0.25</td><td>$-9.29</td></tr></tbody>
     </table>
   </section>
   <section>
