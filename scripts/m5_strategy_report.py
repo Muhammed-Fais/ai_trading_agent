@@ -154,6 +154,55 @@ def _vwap_6am_ist_signal(df: pd.DataFrame, require_candle_color: bool) -> pd.Ser
     return signal
 
 
+def _vwap_cross_6am_entries(df: pd.DataFrame, include_shorts: bool) -> pd.DataFrame:
+    vwap = _ist_daily_vwap(df)
+    local = df.copy()
+    local["ist_day"] = local.index.tz_convert("Asia/Kolkata").date
+    local["ist_hour"] = local.index.tz_convert("Asia/Kolkata").hour
+    local["ist_minute"] = local.index.tz_convert("Asia/Kolkata").minute
+    rows = []
+
+    for _, day_df in local.groupby("ist_day", sort=True):
+        trade_window = day_df[
+            (day_df["ist_hour"] > 6)
+            | ((day_df["ist_hour"] == 6) & (day_df["ist_minute"] >= 0))
+        ]
+        if len(trade_window) < 3:
+            continue
+
+        crossing_side = ""
+        crossing_open = np.nan
+        for timestamp, row in trade_window.iterrows():
+            current_vwap = float(vwap.loc[timestamp])
+            if not np.isfinite(current_vwap):
+                continue
+            touched_vwap = float(row["low"]) <= current_vwap <= float(row["high"])
+            if not crossing_side and touched_vwap:
+                if float(row["close"]) > current_vwap:
+                    crossing_side = "long"
+                    crossing_open = float(row["open"])
+                    continue
+                if include_shorts and float(row["close"]) < current_vwap:
+                    crossing_side = "short"
+                    crossing_open = float(row["open"])
+                    continue
+
+            if crossing_side == "long":
+                bullish = float(row["close"]) > float(row["open"])
+                closed_without_touch = float(row["low"]) > current_vwap and float(row["close"]) > current_vwap
+                if bullish and closed_without_touch:
+                    rows.append({"timestamp": timestamp, "side": "long", "stop": crossing_open})
+                    break
+            elif crossing_side == "short":
+                bearish = float(row["close"]) < float(row["open"])
+                closed_without_touch = float(row["high"]) < current_vwap and float(row["close"]) < current_vwap
+                if bearish and closed_without_touch:
+                    rows.append({"timestamp": timestamp, "side": "short", "stop": crossing_open})
+                    break
+
+    return pd.DataFrame(rows, columns=["timestamp", "side", "stop"])
+
+
 def build_signals(df: pd.DataFrame) -> dict[str, pd.Series]:
     return {
         "vwap_6am_ist": _vwap_6am_ist_signal(df, require_candle_color=False),
@@ -374,11 +423,147 @@ def run_vwap_6am_backtest(
     return result
 
 
+def run_vwap_cross_backtest(
+    df: pd.DataFrame,
+    entries: pd.DataFrame,
+    initial_equity: float,
+    risk_per_trade: float,
+    spread_bps: float,
+    slippage_bps: float,
+    max_position_notional: float,
+    max_hold_bars: int,
+    reward_risk: float = 3.0,
+) -> pd.DataFrame:
+    equity = initial_equity
+    cost = (spread_bps + slippage_bps) / 10_000
+    rows = []
+
+    for row in entries.itertuples(index=False):
+        bar_idx = df.index.get_indexer([row.timestamp])[0]
+        if bar_idx < 0 or bar_idx + 1 >= len(df):
+            continue
+        direction = 1 if row.side == "long" else -1
+        entry_idx = bar_idx + 1
+        entry_time = df.index[entry_idx]
+        entry = float(df["open"].iloc[entry_idx])
+        stop = float(row.stop)
+        stop_pct = direction * (entry - stop) / entry
+        if not np.isfinite(stop_pct) or stop_pct <= 0:
+            continue
+        stop_pct = max(stop_pct, cost * 2)
+        if direction == 1:
+            stop = entry * (1 - stop_pct)
+            target = entry * (1 + reward_risk * stop_pct)
+        else:
+            stop = entry * (1 + stop_pct)
+            target = entry * (1 - reward_risk * stop_pct)
+
+        exit_idx = min(entry_idx + max_hold_bars, len(df) - 1)
+        exit_price = float(df["close"].iloc[exit_idx])
+        exit_reason = "time"
+        for candidate_idx in range(entry_idx, exit_idx + 1):
+            high = float(df["high"].iloc[candidate_idx])
+            low = float(df["low"].iloc[candidate_idx])
+            if direction == 1:
+                hit_stop = low <= stop
+                hit_target = high >= target
+            else:
+                hit_stop = high >= stop
+                hit_target = low <= target
+            if hit_stop and hit_target:
+                exit_idx = candidate_idx
+                exit_price = stop
+                exit_reason = "stop_and_target_same_bar"
+                break
+            if hit_stop:
+                exit_idx = candidate_idx
+                exit_price = stop
+                exit_reason = "stop"
+                break
+            if hit_target:
+                exit_idx = candidate_idx
+                exit_price = target
+                exit_reason = "target"
+                break
+
+        net_return = direction * (exit_price / entry - 1) - cost
+        notional = min(equity * risk_per_trade / stop_pct, max_position_notional)
+        pnl = notional * net_return
+        equity += pnl
+        rows.append(
+            {
+                "timestamp": entry_time,
+                "signal": row.side,
+                "entry": entry,
+                "exit": exit_price,
+                "exit_reason": exit_reason,
+                "net_return": net_return,
+                "notional": notional,
+                "pnl": pnl,
+                "equity": equity,
+            }
+        )
+
+    result = pd.DataFrame(rows)
+    if result.empty:
+        return pd.DataFrame(
+            columns=[
+                "signal",
+                "entry",
+                "exit",
+                "exit_reason",
+                "net_return",
+                "notional",
+                "pnl",
+                "equity",
+                "drawdown",
+                "trade",
+                "win",
+            ]
+        )
+    result = result.set_index("timestamp")
+    result["drawdown"] = result["equity"] / result["equity"].cummax() - 1
+    result["trade"] = True
+    result["win"] = result["pnl"] > 0
+    return result
+
+
 def generate(config_path: Path, output_path: Path) -> None:
     cfg = load_config(config_path)
     df = load_ohlcv_csv(cfg.data.train_csv, cfg.data.timestamp_column)
     reports = {}
     curves = {}
+    for name, entries in {
+        "vwap_cross_6am_ist_3r_long": _vwap_cross_6am_entries(df, include_shorts=False),
+        "vwap_cross_6am_ist_3r_both": _vwap_cross_6am_entries(df, include_shorts=True),
+    }.items():
+        bt = run_vwap_cross_backtest(
+            df,
+            entries,
+            cfg.backtest.initial_equity,
+            cfg.backtest.risk_per_trade,
+            cfg.backtest.spread_bps,
+            cfg.backtest.slippage_bps,
+            cfg.backtest.max_position_notional,
+            cfg.strategy.max_hold_bars,
+        )
+        summary = (
+            summarize_backtest(bt, cfg.backtest.initial_equity)
+            if not bt.empty
+            else {
+                "ending_equity": cfg.backtest.initial_equity,
+                "total_return": 0.0,
+                "max_drawdown": 0.0,
+                "trades": 0.0,
+                "win_rate": 0.0,
+                "avg_trade_pnl": 0.0,
+                "profit_factor": 0.0,
+                "gross_profit": 0.0,
+                "gross_loss": 0.0,
+            }
+        )
+        reports[name] = summary
+        curves[name] = bt
     for name, signals in build_signals(df).items():
         if name.startswith("vwap_6am_ist"):
             bt = run_vwap_6am_backtest(
