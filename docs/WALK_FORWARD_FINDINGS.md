@@ -258,3 +258,59 @@ Next research should focus on:
 - Broker-native spread history
 - M15 and H4 multi-timeframe features
 - Walk-forward model selection with a holdout month untouched by tuning
+
+## M5 VWAP Cross Experiment
+
+I tested the user-specified M5 VWAP idea:
+
+- After `6:00 AM IST`
+- Wait for price to touch/cross IST daily VWAP
+- If price closes above VWAP, use the crossing candle open as stop
+- Enter after a bullish confirmation candle closes above VWAP without touching VWAP
+- Target `1:3` reward/risk
+
+The direct version was not tradable:
+
+- Long-only return: `-3.09%`
+- Long-only max drawdown: `-4.92%`
+- Long-only trades: `233`
+- Long-only profit factor: `0.88`
+
+I then added a train/test sweep over practical filters:
+
+- long-only
+- stop taking new entries after a selected IST hour
+- minimum close distance above VWAP
+- confirmation must happen within a limited number of M5 bars
+- reward/risk and max-hold variations
+
+The train-selected filtered variant was:
+
+- Long-only
+- Trade cutoff: `16:00 IST`
+- Minimum confirmation close distance from VWAP: `8 bps`
+- Max confirmation wait: `3` M5 bars
+- Target: `3R`
+- Max hold: `24` M5 bars
+
+Full sample:
+
+- Total return: `3.38%`
+- Max drawdown: `-0.87%`
+- Trades: `65`
+- Win rate: `49.23%`
+- Profit factor: `1.72`
+
+Chronological split:
+
+- Train return: `2.05%`
+- Train max drawdown: `-0.55%`
+- Train trades: `38`
+- Train profit factor: `1.74`
+- Test return: `1.31%`
+- Test max drawdown: `-0.87%`
+- Test trades: `27`
+- Test profit factor: `1.69`
+- Test doubled-cost profit factor: `1.35`
+
+This is a real improvement over the raw strategy, but the sample is too small for live use. It is a watchlist/paper-trading candidate only. The next requirement is more M5 history with real bid/ask spread, then a forward paper test.

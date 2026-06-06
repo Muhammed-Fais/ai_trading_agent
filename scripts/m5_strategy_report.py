@@ -18,6 +18,18 @@ from xauusd_ml.data import load_ohlcv_csv  # noqa: E402
 from xauusd_ml.features import build_features  # noqa: E402
 
 
+TRAIN_SELECTED_VWAP_PARAMS = {
+    "include_shorts": False,
+    "trade_end_hour": 16,
+    "min_distance_bps": 8.0,
+    "trend_filter": False,
+    "max_confirm_bars": 3,
+    "reward_risk": 3.0,
+    "max_hold_bars": 24,
+    "stop_buffer_bps": 0.0,
+}
+
+
 def _fmt_pct(value: float) -> str:
     return f"{value * 100:,.2f}%"
 
@@ -154,8 +166,17 @@ def _vwap_6am_ist_signal(df: pd.DataFrame, require_candle_color: bool) -> pd.Ser
     return signal
 
 
-def _vwap_cross_6am_entries(df: pd.DataFrame, include_shorts: bool) -> pd.DataFrame:
+def _vwap_cross_6am_entries(
+    df: pd.DataFrame,
+    include_shorts: bool,
+    trade_end_hour: int = 23,
+    min_distance_bps: float = 0.0,
+    trend_filter: bool = False,
+    max_confirm_bars: int | None = None,
+) -> pd.DataFrame:
     vwap = _ist_daily_vwap(df)
+    ema_21 = df["close"].ewm(span=21, adjust=False).mean()
+    ema_144 = df["close"].ewm(span=144, adjust=False).mean()
     local = df.copy()
     local["ist_day"] = local.index.tz_convert("Asia/Kolkata").date
     local["ist_hour"] = local.index.tz_convert("Asia/Kolkata").hour
@@ -164,39 +185,53 @@ def _vwap_cross_6am_entries(df: pd.DataFrame, include_shorts: bool) -> pd.DataFr
 
     for _, day_df in local.groupby("ist_day", sort=True):
         trade_window = day_df[
-            (day_df["ist_hour"] > 6)
-            | ((day_df["ist_hour"] == 6) & (day_df["ist_minute"] >= 0))
+            (
+                (day_df["ist_hour"] > 6)
+                | ((day_df["ist_hour"] == 6) & (day_df["ist_minute"] >= 0))
+            )
+            & (day_df["ist_hour"] < trade_end_hour)
         ]
         if len(trade_window) < 3:
             continue
 
         crossing_side = ""
         crossing_open = np.nan
+        bars_since_crossing = 0
         for timestamp, row in trade_window.iterrows():
             current_vwap = float(vwap.loc[timestamp])
             if not np.isfinite(current_vwap):
                 continue
+            if crossing_side:
+                bars_since_crossing += 1
+                if max_confirm_bars is not None and bars_since_crossing > max_confirm_bars:
+                    break
             touched_vwap = float(row["low"]) <= current_vwap <= float(row["high"])
             if not crossing_side and touched_vwap:
                 if float(row["close"]) > current_vwap:
                     crossing_side = "long"
                     crossing_open = float(row["open"])
+                    bars_since_crossing = 0
                     continue
                 if include_shorts and float(row["close"]) < current_vwap:
                     crossing_side = "short"
                     crossing_open = float(row["open"])
+                    bars_since_crossing = 0
                     continue
 
             if crossing_side == "long":
                 bullish = float(row["close"]) > float(row["open"])
+                distance_ok = (float(row["close"]) / current_vwap - 1) * 10_000 >= min_distance_bps
+                trend_ok = ema_21.loc[timestamp] > ema_144.loc[timestamp] if trend_filter else True
                 closed_without_touch = float(row["low"]) > current_vwap and float(row["close"]) > current_vwap
-                if bullish and closed_without_touch:
+                if bullish and closed_without_touch and distance_ok and trend_ok:
                     rows.append({"timestamp": timestamp, "side": "long", "stop": crossing_open})
                     break
             elif crossing_side == "short":
                 bearish = float(row["close"]) < float(row["open"])
+                distance_ok = (1 - float(row["close"]) / current_vwap) * 10_000 >= min_distance_bps
+                trend_ok = ema_21.loc[timestamp] < ema_144.loc[timestamp] if trend_filter else True
                 closed_without_touch = float(row["high"]) < current_vwap and float(row["close"]) < current_vwap
-                if bearish and closed_without_touch:
+                if bearish and closed_without_touch and distance_ok and trend_ok:
                     rows.append({"timestamp": timestamp, "side": "short", "stop": crossing_open})
                     break
 
@@ -433,6 +468,7 @@ def run_vwap_cross_backtest(
     max_position_notional: float,
     max_hold_bars: int,
     reward_risk: float = 3.0,
+    stop_buffer_bps: float = 0.0,
 ) -> pd.DataFrame:
     equity = initial_equity
     cost = (spread_bps + slippage_bps) / 10_000
@@ -450,7 +486,7 @@ def run_vwap_cross_backtest(
         stop_pct = direction * (entry - stop) / entry
         if not np.isfinite(stop_pct) or stop_pct <= 0:
             continue
-        stop_pct = max(stop_pct, cost * 2)
+        stop_pct = max(stop_pct + stop_buffer_bps / 10_000, cost * 2)
         if direction == 1:
             stop = entry * (1 - stop_pct)
             target = entry * (1 + reward_risk * stop_pct)
@@ -536,6 +572,14 @@ def generate(config_path: Path, output_path: Path) -> None:
     for name, entries in {
         "vwap_cross_6am_ist_3r_long": _vwap_cross_6am_entries(df, include_shorts=False),
         "vwap_cross_6am_ist_3r_both": _vwap_cross_6am_entries(df, include_shorts=True),
+        "vwap_cross_filtered_train_selected": _vwap_cross_6am_entries(
+            df,
+            include_shorts=TRAIN_SELECTED_VWAP_PARAMS["include_shorts"],
+            trade_end_hour=TRAIN_SELECTED_VWAP_PARAMS["trade_end_hour"],
+            min_distance_bps=TRAIN_SELECTED_VWAP_PARAMS["min_distance_bps"],
+            trend_filter=TRAIN_SELECTED_VWAP_PARAMS["trend_filter"],
+            max_confirm_bars=TRAIN_SELECTED_VWAP_PARAMS["max_confirm_bars"],
+        ),
     }.items():
         bt = run_vwap_cross_backtest(
             df,
@@ -545,7 +589,15 @@ def generate(config_path: Path, output_path: Path) -> None:
             cfg.backtest.spread_bps,
             cfg.backtest.slippage_bps,
             cfg.backtest.max_position_notional,
-            cfg.strategy.max_hold_bars,
+            TRAIN_SELECTED_VWAP_PARAMS["max_hold_bars"]
+            if name == "vwap_cross_filtered_train_selected"
+            else cfg.strategy.max_hold_bars,
+            reward_risk=TRAIN_SELECTED_VWAP_PARAMS["reward_risk"]
+            if name == "vwap_cross_filtered_train_selected"
+            else 3.0,
+            stop_buffer_bps=TRAIN_SELECTED_VWAP_PARAMS["stop_buffer_bps"]
+            if name == "vwap_cross_filtered_train_selected"
+            else 0.0,
         )
         summary = (
             summarize_backtest(bt, cfg.backtest.initial_equity)
